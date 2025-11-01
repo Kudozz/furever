@@ -1,15 +1,16 @@
-import { VStack, Box, Text, Link as ChakraLink, HStack, Image } from "@chakra-ui/react";
+import { VStack, Box, Text, Link as ChakraLink, HStack, Image, Icon } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
+import { FaHome, FaPaw, FaCalendarAlt, FaUser } from "react-icons/fa";
 
 const Sidebar = () => {
   const location = useLocation();
 
   const links = [
-    { label: "Dashboard", to: "/" },
-    { label: "Adopt", to: "/adopt" },
-    { label: "Rehome", to: "/rehome" },
-    { label: "Book appointment", to: "/book-appt" },
-    { label: "Profile", to: "/profile" },
+    { label: "Dashboard", to: "/", icon: FaHome },
+    { label: "Adopt", to: "/adopt", icon: FaPaw },
+    { label: "Rehome", to: "/rehome", icon: FaPaw },
+    { label: "Book Appointment", to: "/book-appt", icon: FaCalendarAlt },
+    { label: "Profile", to: "/profile", icon: FaUser },
   ];
 
   return (
@@ -26,13 +27,15 @@ const Sidebar = () => {
       backdropFilter="blur(5px)"
       zIndex="10"
     >
-      <HStack align={"normal"} spacing={2}>
-        <Image src="/logo.png" height={"50px"}></Image>
-      <Text fontSize="2xl" fontWeight="600" textAlign="center" mb={10}>
-        Furever
-      </Text>
-      </HStack>
+      {/* Logo and Title */}
+      <VStack spacing={3} mb={10}>
+        <Image src="/logo.png" height="50px" />
+        <Text fontSize="2xl" fontWeight="600" textAlign="center">
+          FurEver
+        </Text>
+      </VStack>
 
+      {/* Navigation Links */}
       <VStack align="stretch" spacing={2}>
         {links.map((link) => (
           <ChakraLink
@@ -48,7 +51,10 @@ const Sidebar = () => {
               bg: "rgba(255,255,255,0.2)",
               color: "#625050",
             }}
+            display="flex"
+            alignItems="center"
           >
+            <Icon as={link.icon} mr={3} boxSize={5} />
             {link.label}
           </ChakraLink>
         ))}

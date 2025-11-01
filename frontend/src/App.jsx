@@ -1,30 +1,86 @@
-import { Box, useColorModeValue } from "@chakra-ui/react";
-import {Route, Routes} from "react-router-dom";
+import { Box } from "@chakra-ui/react";
+import { Routes, Route, Navigate } from "react-router-dom";
+
+// Customer Panel Components
 import AdoptPage from "./pages/AdoptPage";
 import RehomePage from "./pages/RehomePage";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/CustomerSidebar";
 import CustomerDash from "./pages/CustomerDash";
-import Theme from "./components/Theme";
+
+// Admin Panel Components
+import Login from "./components/Login";
+import Signup from "./components/Signup";
+import Welcome from "./components/welcome";
+import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
+import Appointment from "./components/Appointments";
+
+// Vet Panel Components
+import VetDashboard from "./pages/vet/VetDashboard";
+import Appointments from "./pages/vet/Appointments";
+import Patients from "./pages/vet/Patients";
+import Prescriptions from "./pages/vet/Prescriptions";
+import Profile from "./pages/vet/Profile";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AddPet from "./pages/admin/AddPet";
+
+// Customer Layout Wrapper
+function CustomerLayout({ children }) {
+  return (
+    <Box
+      minH="100vh"
+      display="flex"
+      bgImage="url('/bg.png')"
+      bgSize="cover"
+      bgPosition="center"
+      bgRepeat="no-repeat"
+    >
+      <Sidebar />
+      <Box flex="1" ml="230px" p={6}>
+        {children}
+      </Box>
+    </Box>
+  );
+}
 
 function App() {
   return (
-    <Box minH={"100vh"} display="flex"
-      bgImage="url('/bg.png')" // 👈 your image path
-      bgSize="cover"            // make sure it covers full area
-      bgPosition="center"
-      bgRepeat="no-repeat">
-       {/* Sidebar (always visible) */}
-      <Sidebar />
+    <Routes>
+      {/* Redirect root to customer home */}
+      <Route path="/" element={<Navigate to="/customer-home" />} />
 
-      {/* Main content shifted to the right */}
-      <Box flex="1" ml="230px" p={6}>
-        <Routes>
-           <Route path="/" element={<CustomerDash/>}/>
-          <Route path="/adopt" element={<AdoptPage/>}/>
-         <Route path="/rehome" element={<RehomePage />} />
-        </Routes>
-      </Box>
-    </Box>
+      {/* Auth Routes (no sidebar) */}
+      <Route path="/login" element={<Login />} />
+      <Route path="/signup" element={<Signup />} />
+      <Route path="/welcome" element={<Welcome />} />
+
+      {/* Admin Routes (no sidebar) */}
+      <Route path="/admin" element={<AdminDashboard />} />
+      <Route path="/admin/pets/add" element={<AddPet />} />
+
+      {/* Vet Routes (no sidebar for now) */}
+      <Route path="/vet-home" element={<VetDashboard />} />
+
+      {/* Customer Routes (with sidebar) */}
+      <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
+      <Route path="/adopt" element={<CustomerLayout><AdoptPage /></CustomerLayout>} />
+      <Route path="/rehome" element={<CustomerLayout><RehomePage /></CustomerLayout>} />
+
+    {/* unimplemented */}
+{/* 
+      <Route path="/appointments" element={<Appointments />} />
+      <Route path="/patients" element={<Patients />} />
+      <Route path="/prescriptions" element={<Prescriptions />} />
+      <Route path="/profile" element={<Profile />} /> */}
+
+{/* extra */}
+
+  {/* this one has good search/filter, see later */}
+      {/* <Route path="/home" element={<Home />} /> */}
+
+      {/* <Route path="/dashboard" element={<Dashboard />} />
+      <Route path="/appointment" element={<Appointment />} /> */}
+    </Routes>
   );
 }
 

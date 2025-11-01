@@ -1,0 +1,27 @@
+.welcome-screen {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+    background: url("./assets/login-bg.png") center/cover no-repeat; /* your image */
+    background-size: cover;
+    flex-direction: column;
+    color: #fff;
+    text-align: center;
+  }
+  
+  .welcome-screen h1 {
+    font-family: 'Poppins', sans-serif;
+    font-size: 48px;
+    font-weight: 700;
+    text-shadow: 2px 2px 6px rgba(0,0,0,0.5);
+    animation: fadeIn 1.5s ease-in-out;
+  }
+  
+  /* Optional fade-in animation */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+  }
+  

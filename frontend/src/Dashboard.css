@@ -1,0 +1,119 @@
+  /* === MAIN CONTENT BOX === */
+  .content-box {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 30px 40px;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+    margin-top: 25px;
+  }
+  
+  .content-box h2 {
+    color: #333;
+    margin-bottom: 10px;
+  }
+  
+  .content-box p {
+    color: #666;
+    margin-bottom: 25px;
+  }
+  
+  /* === CARD GRID === */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 1.2rem;
+    margin-bottom: 2rem;
+  }
+  
+  .info-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    text-align: left;
+  }
+  
+  .info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.15);
+  }
+  
+  .info-card h4 {
+    color: #333;
+    margin-bottom: 8px;
+  }
+  
+  .info-card p {
+    color: #777;
+    font-size: 0.9rem;
+    margin-bottom: 12px;
+  }
+  
+  .info-card button {
+    background: #4b4141;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+  }
+  
+  .info-card button:hover {
+    background: #5e4644;
+    transform: scale(1.05);
+  }
+  
+  /* === FOOTER ACTIONS === */
+  .footer-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: flex-start;
+  }
+  
+  .footer-actions button {
+    background: #595755;
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: 0.3s;
+  }
+  
+  .footer-actions button:hover {
+    background: #654b3ad4;
+    
+  }
+  /* === SECTION TITLES === */
+.content-box h3 {
+    margin-top: 2rem;
+    color: #333;
+    margin-bottom: 1rem;
+  }
+  
+  /* === SINGLE INFO CARD (like Manage Profile) === */
+  .info-card.single {
+    width: 100%;
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    margin-top: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  /* Active sidebar link */
+  .sidebar ul li.active {
+    background-color: rgba(255, 255, 255, 0.25);
+    border-left: 4px solid #ffd166;
+    transform: translateX(5px);
+    font-weight: 600;
+  }
+  

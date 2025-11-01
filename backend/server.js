@@ -1,38 +1,58 @@
+// server/index.js
 import express from "express";
+import cors from "cors";
 import dotenv from "dotenv";
-import { connectDB } from "./config/db.js";
 import path from "path";
+import { connectDB } from "./config/db.js";
+import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/pet.route.js";
 
+// Load environment variables
 dotenv.config();
 
-const app = express(); //creating app
+// Initialize Express app
+const app = express();
 const PORT = process.env.PORT || 5000;
-
 const __dirname = path.resolve();
 
-app.use(express.json()); //allows us to accept json data in the req.body
+// Connect to MongoDB
+connectDB();
 
+// Middleware
+app.use(
+    cors({
+        origin: process.env.NODE_ENV === "production"
+            ? process.env.FRONTEND_URL
+            : "http://localhost:5173",
+        credentials: true,
+    })
+);
+
+app.use(express.json()); // Parse JSON request bodies
+
+// API Routes
+app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
 
-if(process.env.NODE_ENV === "production") {
+// Production: Serve React frontend
+if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "/frontend/dist")));
 
-    app.get('*', (req, res)=>{
-        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));    
-    })
+    app.get("*", (req, res) => {
+        res.sendFile(path.resolve(__dirname, "frontend", "dist", "index.html"));
+    });
 }
 
-console.log(process.env.MONGO_URI); //connect database
+// Development: Root route
+if (process.env.NODE_ENV !== "production") {
+    app.get("/", (req, res) => {
+        res.send("🐾 Pet Care API with Authentication is running...");
+    });
+}
 
+// Start server
 app.listen(PORT, () => {
-    connectDB();
-    console.log('Server started at localhost:' + PORT);
+    console.log(`✅ Server running on port ${PORT}`);
+    console.log(`📊 Environment: ${process.env.NODE_ENV || "development"}`);
+    console.log(`🗄️  Database: ${process.env.MONGO_URI ? "Connected" : "Not configured"}`);
 });
-
-app.get("/", (req, res) => {
-    res.send("API is running...");
-});
-
-//t4wcwBZkaD60S2ek
-//mongosh "mongodb+srv://cluster0.k2thfll.mongodb.net/" --apiVersion 1 --username hanaasajid_db_user --password t4wcwBZkaD60S2ek
