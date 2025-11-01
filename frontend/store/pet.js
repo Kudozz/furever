@@ -1,42 +1,42 @@
 import {create} from 'zustand';
-export const useProductStore = create((set) =>({
-    products: [],
-    setProducts: (products)=>set({products}),
+export const usePetInventory = create((set) =>({
+    pets: [],
+    setPets: (pets)=>set({pets}),
 
-    createProduct: async(newProduct) =>{
-        if(!newProduct.name || !newProduct.image || !newProduct.price) {
+    createPet: async(newPet) =>{
+        if (!newPet.name || !newPet.breed || !newPet.age || !newPet.status || !newPet.image) {
             return{ success: false, message: "Please fill all fields"};
         }
 
-        const res = await fetch("/api/products", {
+        const res = await fetch("/api/pets", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(newProduct),
+            body: JSON.stringify(newPet),
         });
 
-        // const res = await fetch("/api/products", {
+        // const res = await fetch("/api/pets", {
         //     method: "POST", 
         //     headers:{
         //         "Content-Type":"application/json"
         //     }, 
-        //     body:JSON.stringify(newProduct)
+        //     body:JSON.stringify(newPet)
         // });
 
         const data = await res.json();
         
-        set((state)=> ({products:[...state.products, data.data]}))
+        set((state)=> ({pets:[...state.pets, data.data]}))
 
-        return { success: true, message: "Product added successfully    " };
+        return { success: true, message: "Pet added successfully!" };
     },
 
-    fetchProducts: async() =>{
-        const res = await fetch("/api/products");
+    fetchPets: async() =>{
+        const res = await fetch("/api/pets");
         const data= await res.json();
-        set({products: data.data});
+        set({pets: data.data});
     },
 
-    deleteProduct: async(pid) =>{
-        const res = await fetch(`api/products/${pid}`, {
+    deletePet: async(pid) =>{
+        const res = await fetch(`/api/pets/${pid}`, {
                                 method: "DELETE",});
 
         const data = await res.json();
@@ -44,24 +44,24 @@ export const useProductStore = create((set) =>({
             return {success: false, message: data.message };
 
         //update ui immediately without needing refresh
-        set(state=>({products: state.products.filter(product => product._id !== pid)}));
+        set(state=>({pets: state.pets.filter(pet => pet._id !== pid)}));
         return {success: true, message: data.message};
     },
 
-    updateProduct: async (pid, updatedProduct) => {
-        const res = await fetch(`/api/products/${pid}`, {
+    updatePet: async (pid, updatedPet) => {
+        const res = await fetch(`/api/pets/${pid}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
             },
-            body: JSON.stringify(updatedProduct),
+            body: JSON.stringify(updatedPet),
         });
         const data = await res.json();
         if (!data.success) return { success: false, message: data.message };
 
         // update the ui immediately, without needing a refresh
         set((state) => ({
-            products: state.products.map((product) => (product._id === pid ? data.data : product)),
+            pets: state.pets.map((product) => (product._id === pid ? data.data : product)),
         }));
 
         return { success: true, message: data.message };
