@@ -8,7 +8,7 @@ const Welcome = () => {
     useEffect(() => {
         // Redirect to dashboard after 3 seconds
         const timer = setTimeout(() => {
-            navigate("/home");
+            navigate("/customer-home");
         }, 2000);
 
         return () => clearTimeout(timer);
