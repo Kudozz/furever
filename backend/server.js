@@ -6,6 +6,7 @@ import path from "path";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/pet.route.js";
+import appointmentRoutes from "./routes/appointmentRoutes.js";
 import vetRoutes from "./routes/vetRoutes.js";
 
 // Load environment variables
@@ -15,6 +16,11 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 const __dirname = path.resolve();
+
+
+
+// Serve uploaded files
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
 // Connect to MongoDB
 connectDB();
@@ -34,6 +40,8 @@ app.use(express.json()); // Parse JSON request bodies
 // API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
+app.use("/api/appointments", appointmentRoutes);
+app.use(express.json());
 
 app.use("/api/vets", vetRoutes);
 
