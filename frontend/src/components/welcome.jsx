@@ -8,7 +8,20 @@ const Welcome = () => {
     useEffect(() => {
         // Redirect to dashboard after 3 seconds
         const timer = setTimeout(() => {
-            navigate("/customer-home");
+            const userInfo = localStorage.getItem("user");
+            if (userInfo) {
+                const user = JSON.parse(userInfo);
+
+                if (user.role == "admin") {
+                    navigate("/admin");
+                } else if (user.role == "vet") {
+                    navigate("/vet-home");
+                } else if (user.role == "user") {
+                    navigate("/customer-home");
+                } else {
+                    navigate("/login");
+                }
+            } else { navigate("/login"); }
         }, 2000);
 
         return () => clearTimeout(timer);

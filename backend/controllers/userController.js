@@ -1,8 +1,8 @@
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
 
-const generateToken = (id) => {
-    return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+const generateToken = (id, role) => {
+    return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 // ✅ POST /api/users/signup
@@ -31,7 +31,8 @@ export const registerUser = async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            token: generateToken(user._id),
+            role: user.role,
+            token: generateToken(user._id, user.role),
         });
     } catch (error) {
         console.error(error);
@@ -51,7 +52,8 @@ export const loginUser = async (req, res) => {
                 _id: user._id,
                 name: user.name,
                 email: user.email,
-                token: generateToken(user._id),
+                role: user.role,
+                token: generateToken(user._id, user.role),
             });
         } else {
             res.status(401).json({ message: "Invalid email or password" });
