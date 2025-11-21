@@ -6,6 +6,7 @@ import path from "path";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/pet.route.js";
+import vetRoutes from "./routes/vetRoutes.js";
 
 // Load environment variables
 dotenv.config();
@@ -33,6 +34,8 @@ app.use(express.json()); // Parse JSON request bodies
 // API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
+
+app.use("/api/vets", vetRoutes);
 
 // Production: Serve React frontend
 if (process.env.NODE_ENV === "production") {

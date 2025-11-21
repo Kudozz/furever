@@ -23,6 +23,8 @@ import Prescriptions from "./pages/vet/Prescriptions";
 import Profile from "./pages/vet/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AddPet from "./pages/admin/AddPet";
+import AddVet from "./pages/admin/AddVet";
+import ViewVets from "./pages/admin/ViewVets";
 
 // Customer Layout Wrapper
 function CustomerLayout({ children }) {
@@ -57,6 +59,8 @@ function App() {
       {/* Admin Routes (no sidebar) */}
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/pets/add" element={<AddPet />} />
+      <Route path="/admin/vets/add" element={<AddVet />} />
+      <Route path = "/admin/vets/view" element={<ViewVets/>}/>
 
       {/* Vet Routes (no sidebar for now) */}
       <Route path="/vet-home" element={<VetDashboard />} />
@@ -65,6 +69,8 @@ function App() {
       <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
       <Route path="/adopt" element={<CustomerLayout><AdoptPage /></CustomerLayout>} />
       <Route path="/rehome" element={<CustomerLayout><RehomePage /></CustomerLayout>} />
+
+
 
     {/* unimplemented */}
 {/* 

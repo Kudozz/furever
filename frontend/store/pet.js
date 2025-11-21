@@ -61,7 +61,7 @@ export const usePetInventory = create((set) =>({
 
         // update the ui immediately, without needing a refresh
         set((state) => ({
-            pets: state.pets.map((product) => (product._id === pid ? data.data : product)),
+            pets: state.pets.map((pet) => (pet._id === pid ? data.data : pet)),
         }));
 
         return { success: true, message: data.message };

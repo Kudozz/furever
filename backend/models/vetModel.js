@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import User from "./userModel.js";
 
 const vetSchema = new mongoose.Schema({
     user: {
@@ -16,4 +17,5 @@ const vetSchema = new mongoose.Schema({
     timestamps: true,
 });
 
-export default mongoose.model("Vet", vetSchema);
+const Vet= mongoose.model("Vet", vetSchema)
+export default Vet;
