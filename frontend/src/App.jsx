@@ -7,6 +7,12 @@ import RehomePage from "./pages/RehomePage";
 import Sidebar from "./components/CustomerSidebar";
 import CustomerDash from "./pages/CustomerDash";
 
+//Appointment pages
+import RequestAppointment from "./pages/customer/RequestAppointment";
+import CancelAppointment from "./pages/customer/CancelAppointment";
+import UpcomingAppointments from "./pages/customer/UpcomingAppointments";
+import ModifyAppointments from "./pages/customer/ModifyAppointments"
+
 // Admin Panel Components
 import Login from "./components/Login";
 import Signup from "./components/Signup";
@@ -65,6 +71,10 @@ function App() {
       <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
       <Route path="/adopt" element={<CustomerLayout><AdoptPage /></CustomerLayout>} />
       <Route path="/rehome" element={<CustomerLayout><RehomePage /></CustomerLayout>} />
+      <Route path="/book-appt" element={<CustomerLayout><RequestAppointment /></CustomerLayout>} />
+        <Route path="/cancel-appt" element={<CustomerLayout><CancelAppointment /> </CustomerLayout>} />
+        <Route path="/upcoming-appt" element={<CustomerLayout><UpcomingAppointments /> </CustomerLayout>} />
+        <Route path="/modify-appt" element ={<CustomerLayout> <ModifyAppointments/></CustomerLayout>}></Route>
 
     {/* unimplemented */}
 {/* 
