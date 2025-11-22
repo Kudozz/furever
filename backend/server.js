@@ -6,7 +6,7 @@ import path from "path";
 import { connectDB } from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/pet.route.js";
-import appointmentRoutes from "./routes/appointmentRoutes.js";
+import vetAppointmentRoutes from "./routes/vetAppointmentRoutes.js";
 import vetRoutes from "./routes/vetRoutes.js";
 
 // Load environment variables
@@ -40,7 +40,7 @@ app.use(express.json()); // Parse JSON request bodies
 // API Routes
 app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
-app.use("/api/appointments", appointmentRoutes);
+app.use("/api/appointments", vetAppointmentRoutes);
 app.use("/api/vets", vetRoutes);
 app.use(express.json());
 

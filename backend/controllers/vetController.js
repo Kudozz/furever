@@ -1,6 +1,6 @@
 import Vet from "../models/vetModel.js";
 import User from "../models/userModel.js";
-import Appointment from "../models/appointmentModel.js";
+import Appointment from "../models/vetAppointmentModel.js";
 import bcrypt from "bcryptjs";
 
 export const createVet = async (req, res) => {

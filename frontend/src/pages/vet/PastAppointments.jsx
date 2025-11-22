@@ -9,7 +9,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/vet/VetSidebar";
 import background from "../../assets/background.png";
 import { useAuth } from "../../context/AuthContext";
 

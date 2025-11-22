@@ -8,10 +8,10 @@ import {
   vetDecision,
   markAppointmentDone,
   getAvailableVets
-} from "../controllers/appointmentController.js";
+} from "../controllers/vetAppointmentController.js";
 
-import Appointment from "../models/appointmentModel.js";
-import Pet from "../models/petModel.js";
+import Appointment from "../models/vetAppointmentModel.js";
+import Pet from "../models/pet.model.js";
 
 const router = express.Router();
 

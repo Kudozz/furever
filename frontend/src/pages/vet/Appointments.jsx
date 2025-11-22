@@ -1,6 +1,6 @@
 import { Box, SimpleGrid, Heading, Button, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar"; 
+import Sidebar from "../../components/vet/VetSidebar"; 
 import bgImage from "../../assets/background.png"; 
 
 const Appointments = () => {
@@ -8,7 +8,7 @@ const Appointments = () => {
 
   return (
     <Box bgImage={`url(${bgImage})`} bgSize="cover" minH="100vh">
-      <Sidebar />
+      <Sidebar /> 
       <Box ml="230px" p={6}>
         <Heading color="#3a2f2f" mb={6}>Appointments</Heading>
 

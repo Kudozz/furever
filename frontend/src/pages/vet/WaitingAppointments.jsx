@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Box, Heading, Text, Button, SimpleGrid, useToast } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import Sidebar from "../../components/Sidebar";
+import Sidebar from "../../components/vet/VetSidebar";
 import axios from "axios";
 import background from "../../assets/background.png";
 import { useAuth } from "../../context/AuthContext";
