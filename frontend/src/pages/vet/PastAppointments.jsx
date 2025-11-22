@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/vet/VetSidebar";
 import background from "../../assets/background.png";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../AuthContext";
 
 const PastAppointments = () => {
   const navigate = useNavigate();

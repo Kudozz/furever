@@ -105,7 +105,7 @@ const PetCard = ({ pet }) => {
 					Status: {pet.status}
 				</Text>
 
-				<Button fontsize='xl' bg="#b89f7e" _hover={{ bg: "#d8cfc3ff" }}  my={4}>Adopt</Button>
+				<Button fontSize='xl' bg="#b89f7e" _hover={{ bg: "#d8cfc3ff" }}  my={4}>Adopt</Button>
 
 				{/* <HStack spacing={2}>
 					<IconButton icon={<EditIcon />} onClick={onOpen} colorScheme='blue' />

@@ -26,7 +26,7 @@ import VetDashboard from "./pages/vet/VetDashboard";
 import Appointments from "./pages/vet/Appointments";
 import PendingAppointments from "./pages/vet/PendingAppointments";
 import PastAppointments from "./pages/vet/PastAppointments";
-import WaitingAppointments from "./pages/vet/WaitingAppointments";
+
 import Patients from "./pages/vet/Patients";
 import Prescriptions from "./pages/vet/Prescriptions";
 import Profile from "./pages/vet/Profile";
@@ -76,7 +76,7 @@ function App() {
       <Route path="/appointments/view" element={<Appointments />} />
       <Route path="/appointments/pending" element={<PendingAppointments />} />
       <Route path="/appointments/past" element={<PastAppointments />} />
-      <Route path="/appointments/waiting" element={<WaitingAppointments />} />
+      {/* <Route path="/appointments/waiting" element={<WaitingAppointments />} /> */}
 
 
       {/* Customer Routes (with sidebar) */}
