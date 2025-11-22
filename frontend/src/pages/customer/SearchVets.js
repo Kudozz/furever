@@ -1,8 +1,8 @@
-// src/pages/user/SearchVets.js
 import { useState } from "react";
 import { Box, Button, Input, VStack, Text } from "@chakra-ui/react";
 import API from "../../services/api";
 import { useNavigate } from "react-router-dom";
+import bgImage from "../../assets/background.png";
 
 const SearchVets = () => {
   const [timeslot, setTimeslot] = useState("");
@@ -19,8 +19,13 @@ const SearchVets = () => {
   };
 
   return (
-    <Box p={6} bg="#fdfaf6" minH="100vh">
-      <VStack spacing={4} align="stretch">
+    <Box
+      p={6}
+      bgImage={`url(${bgImage})`}
+      bgSize="cover"
+      minH="100vh"
+    >
+      <VStack spacing={4} align="stretch" maxW="600px" mx="auto">
         <Input
           type="datetime-local"
           value={timeslot}
@@ -29,7 +34,12 @@ const SearchVets = () => {
           borderColor="#ccc"
           _focus={{ borderColor: "#c09a7f" }}
         />
-        <Button bg="#c09a7f" color="white" _hover={{ bg: "#a57e63" }} onClick={handleSearch}>
+        <Button
+          bg="#c09a7f"
+          color="white"
+          _hover={{ bg: "#a57e63" }}
+          onClick={handleSearch}
+        >
           Search Available Vets
         </Button>
 

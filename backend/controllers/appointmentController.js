@@ -3,7 +3,6 @@ import Notification from "../models/notificationModel.js";
 import Vet from "../models/vetModel.js";
 import Pet from "../models/petModel.js";
 
-// 1. Search available vets for a timeslot
 export const getAvailableVets = async (req, res) => {
   try {
     const { timeslot } = req.body;
@@ -18,10 +17,11 @@ export const getAvailableVets = async (req, res) => {
   }
 };
 
-// 2. Create appointment
 export const createAppointment = async (req, res) => {
   try {
     const { user, vet, petId, petName, timeslot, reason, medicalHistory } = req.body;
+
+    const filePath = req.file ? req.file.path : medicalHistory || ""; // use uploaded file if exists
 
     const appointment = await Appointment.create({
       user,
@@ -30,11 +30,10 @@ export const createAppointment = async (req, res) => {
       petName,
       timeslot,
       reason,
-      medicalHistory,
+      medicalHistory: filePath,
       status: "Pending",
     });
 
-    // Notify vet
     await Notification.create({
       receiverId: vet,
       message: `New appointment request from user ${user} for ${petName}`,
@@ -49,7 +48,7 @@ export const createAppointment = async (req, res) => {
   }
 };
 
-// 3. Get appointments for a user
+
 export const getUserAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ user: req.params.userId });
@@ -60,7 +59,6 @@ export const getUserAppointments = async (req, res) => {
   }
 };
 
-// 4. Get appointments for a vet
 export const getVetAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({ vet: req.params.vetId });
@@ -71,12 +69,11 @@ export const getVetAppointments = async (req, res) => {
   }
 };
 
-// 5. Get pending appointments for a vet (with pet details)
 export const getPendingAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       vet: req.params.vetId,
-      status: "Pending",
+      status: "Approved",
     }).lean();
 
     const appointmentsWithPet = await Promise.all(
@@ -98,7 +95,58 @@ export const getPendingAppointments = async (req, res) => {
   }
 };
 
-// 6. Get past appointments for a vet (with pet details)
+export const getWaitingAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      vet: req.params.vetId,
+      status: "Pending",
+    }).lean();
+
+    const appointmentsWithPet = await Promise.all(
+      appointments.map(async (appt) => {
+        const pet = await Pet.findById(appt.petId).select("breed age image");
+        return {
+          ...appt,
+          breed: pet?.breed || "",
+          age: pet?.age || "",
+          image: pet?.image || "",
+        };
+      })
+    );
+
+    res.json(appointmentsWithPet);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching waiting appointments" });
+  }
+};
+
+export const getApprovedAppointments = async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      vet: req.params.vetId,
+      status: "Approved",
+    }).lean();
+
+    const appointmentsWithPet = await Promise.all(
+      appointments.map(async (appt) => {
+        const pet = await Pet.findById(appt.petId).select("breed age image");
+        return {
+          ...appt,
+          breed: pet?.breed || "",
+          age: pet?.age || "",
+          image: pet?.image || "",
+        };
+      })
+    );
+
+    res.json(appointmentsWithPet);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching approved appointments" });
+  }
+};
+
 export const getPastAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
@@ -149,17 +197,34 @@ export const cancelAppointment = async (req, res) => {
   }
 };
 
-// 8. Vet accept/reject appointment
 export const vetDecision = async (req, res) => {
   try {
     const { status } = req.body;
     const appointment = await Appointment.findById(req.params.id);
     if (!appointment) return res.status(404).json({ message: "Appointment not found" });
 
+    await Notification.updateMany(
+      { appointmentId: appointment._id, receiverId: appointment.vet },
+      { read: true }
+    );
+
+    
+    if (status === "Rejected") {
+      await Appointment.findByIdAndDelete(req.params.id);
+
+      await Notification.create({
+        receiverId: appointment.user,
+        message: `Your appointment for ${appointment.petName} has been Rejected by the vet`,
+        type: "appointment",
+        appointmentId: appointment._id,
+      });
+
+      return res.json({ message: "Appointment rejected and deleted" });
+    }
+
     appointment.status = status;
     await appointment.save();
 
-    // Notify user
     await Notification.create({
       receiverId: appointment.user,
       message: `Your appointment for ${appointment.petName} has been ${status} by the vet`,
@@ -173,6 +238,7 @@ export const vetDecision = async (req, res) => {
     res.status(500).json({ message: "Error updating appointment status" });
   }
 };
+
 
 // 9. Add notes to appointment
 export const addNotes = async (req, res) => {
@@ -190,7 +256,7 @@ export const addNotes = async (req, res) => {
       type: "appointment",
       appointmentId: appointment._id,
     });
-    
+
     res.json(appointment);
   } catch (err) {
     console.error(err);

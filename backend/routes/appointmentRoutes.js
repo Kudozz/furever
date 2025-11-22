@@ -1,5 +1,5 @@
-//appointmnetroutes.js
 import express from "express";
+import multer from "multer";
 import {
   createAppointment,
   getUserAppointments,
@@ -15,37 +15,35 @@ import Pet from "../models/petModel.js";
 
 const router = express.Router();
 
+// Multer config for uploads
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, "uploads/"); // store in uploads folder
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
+    cb(null, uniqueSuffix + "-" + file.originalname);
+  },
+});
+const upload = multer({ storage });
+
 // Search available vets
 router.post("/available", getAvailableVets);
 
-// Create appointment
-router.post("/", createAppointment);
+// Create appointment (with optional file)
+router.post("/", upload.single("medicalHistory"), createAppointment);
 
 // Get appointments
 router.get("/user/:userId", getUserAppointments);
 router.get("/vet/:vetId", getVetAppointments);
 
-// Cancel appointment (user cancels → popup only)
-router.put("/cancel/:id", async (req, res) => {
-  try {
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+// Cancel appointment
+router.put("/cancel/:id", cancelAppointment);
 
-    appointment.status = "Canceled";
-    await appointment.save();
-
-    // Send popup message
-    res.status(200).json({ appointment, message: "Appointment canceled successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error canceling appointment" });
-  }
-});
-
-// Vet decision (accept/reject) → notification still needed
+// Vet decision (accept/reject)
 router.patch("/:id/decision", vetDecision);
 
-// Add notes (vet adds → popup only)
+// Add notes to appointment
 router.post("/:id/notes", async (req, res) => {
   try {
     const { notes } = req.body;
@@ -55,7 +53,6 @@ router.post("/:id/notes", async (req, res) => {
     appointment.notes = notes;
     await appointment.save();
 
-    // Send popup message
     res.status(200).json({ appointment, message: "Notes added successfully" });
   } catch (err) {
     console.error(err);
@@ -63,44 +60,43 @@ router.post("/:id/notes", async (req, res) => {
   }
 });
 
-// Mark appointment done (requires notes) → popup only
-router.patch("/:id/done", async (req, res) => {
-  try {
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+// Mark appointment done
+router.patch("/:id/done", markAppointmentDone);
 
-    if (!appointment.notes || appointment.notes.trim() === "") {
-      return res.status(400).json({ message: "Cannot mark done without notes" });
-    }
-
-    appointment.status = "Done";
-    await appointment.save();
-
-    // Send popup message
-    res.status(200).json({ appointment, message: "Appointment marked as done successfully" });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error marking appointment done" });
-  }
-});
-
-// Get pending appointments for a vet with pet details
-router.get("/pending/:vetId", async (req, res) => {
+// Waiting appointments for vet
+router.get("/waiting/:vetId", async (req, res) => {
   try {
     const appointments = await Appointment.find({
       vet: req.params.vetId,
       status: "Pending",
-    }).lean(); 
+    }).lean();
 
     const appointmentsWithPet = await Promise.all(
       appointments.map(async (appt) => {
-        const pet = await Pet.findOne({ name: appt.petName }).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
+        const pet = await Pet.findById(appt.petId).select("breed age image");
+        return { ...appt, breed: pet?.breed || "", age: pet?.age || "", image: pet?.image || "" };
+      })
+    );
+
+    res.status(200).json(appointmentsWithPet);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Error fetching waiting appointments" });
+  }
+});
+
+// Pending appointments for vet
+router.get("/pending/:vetId", async (req, res) => {
+  try {
+    const appointments = await Appointment.find({
+      vet: req.params.vetId,
+      status: "Approved",
+    }).lean();
+
+    const appointmentsWithPet = await Promise.all(
+      appointments.map(async (appt) => {
+        const pet = await Pet.findById(appt.petId).select("breed age image");
+        return { ...appt, breed: pet?.breed || "", age: pet?.age || "", image: pet?.image || "" };
       })
     );
 
@@ -111,7 +107,7 @@ router.get("/pending/:vetId", async (req, res) => {
   }
 });
 
-// Get past appointments for a vet with pet details
+// Past appointments for vet
 router.get("/past/:vetId", async (req, res) => {
   try {
     const appointments = await Appointment.find({
@@ -121,13 +117,8 @@ router.get("/past/:vetId", async (req, res) => {
 
     const appointmentsWithPet = await Promise.all(
       appointments.map(async (appt) => {
-        const pet = await Pet.findOne({ name: appt.petName }).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
+        const pet = await Pet.findById(appt.petId).select("breed age image");
+        return { ...appt, breed: pet?.breed || "", age: pet?.age || "", image: pet?.image || "" };
       })
     );
 

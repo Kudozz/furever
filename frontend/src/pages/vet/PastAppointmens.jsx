@@ -4,18 +4,20 @@ import {
   Heading,
   Text,
   SimpleGrid,
-  Button,
   Input,
   Flex,
   useToast,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
-import bgImage from "../../assets/background.png";
+import background from "../../assets/background.png";
+import { useAuth } from "../../context/AuthContext";
 
 const PastAppointments = () => {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
+  const vetId = user?._id;
 
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -23,22 +25,23 @@ const PastAppointments = () => {
   const [dateFilter, setDateFilter] = useState("");
 
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
+    if (!vetId) return;
 
-        const vetId = "YOUR_VET_ID_HERE";
+    const fetchPastAppointments = async () => {
+      try {
         const res = await fetch(`http://localhost:3000/api/appointments/past/${vetId}`);
         const data = await res.json();
 
-
-        const formattedData = data.map(appt => {
-          const dateObj = new Date(appt.timeslot);
-          return {
-            ...appt,
-            date: dateObj.toLocaleDateString(),
-            time: dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
-          };
-        });
+        const formattedData = data
+          .filter((appt) => appt.status === "done") // only done appointments
+          .map((appt) => {
+            const dateObj = new Date(appt.timeslot);
+            return {
+              ...appt,
+              date: dateObj.toLocaleDateString(),
+              time: dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+            };
+          });
 
         setAppointments(formattedData);
         setFilteredAppointments(formattedData);
@@ -53,21 +56,20 @@ const PastAppointments = () => {
       }
     };
 
-    fetchAppointments();
-  }, [toast]);
-
+    fetchPastAppointments();
+  }, [vetId, toast]);
 
   useEffect(() => {
     let filtered = appointments;
 
     if (search.trim() !== "") {
-      filtered = filtered.filter(appt =>
+      filtered = filtered.filter((appt) =>
         appt.petName.toLowerCase().includes(search.toLowerCase())
       );
     }
 
     if (dateFilter !== "") {
-      filtered = filtered.filter(appt => appt.date === dateFilter);
+      filtered = filtered.filter((appt) => appt.date === dateFilter);
     }
 
     setFilteredAppointments(filtered);
@@ -76,7 +78,7 @@ const PastAppointments = () => {
   return (
     <Box
       minH="100vh"
-      bgImage={`url(${bgImage})`}
+      bgImage={`url(${background})`}
       bgSize="cover"
       bgRepeat="no-repeat"
     >
@@ -104,9 +106,9 @@ const PastAppointments = () => {
           />
 
           <Button
-            bg="#c09a7f"
+            bg="#917659ff"
             color="white"
-            _hover={{ bg: "#a57e63" }}
+            _hover={{ bg: "#3f3320ff" }}
             onClick={() => {
               setSearch("");
               setDateFilter("");
@@ -115,7 +117,6 @@ const PastAppointments = () => {
             Clear Filters
           </Button>
         </Flex>
-
 
         {filteredAppointments.length === 0 ? (
           <Text color="#555">No past appointments</Text>
@@ -137,12 +138,14 @@ const PastAppointments = () => {
                 <Text mb={2} color="#555">Age: {appt.age}</Text>
                 <Text mb={2} color="#555">Date: {appt.date} | Time: {appt.time}</Text>
                 <Text mb={2} color="#555">Reason: {appt.reason}</Text>
-                <Text mb={4} color="#555">Notes: {appt.notes || "No notes added"}</Text>
+                <Text mb={4} color="#555">
+                  Notes: {appt.notes || "No notes added"}
+                </Text>
 
                 <Button
-                  bg="#9c7960ff"
+                  bg="#917659ff"
                   color="white"
-                  _hover={{ bg: "#9c7960ff" }}
+                  _hover={{ bg: "#3f3320ff" }}
                   onClick={() => navigate(`/pet/${appt.petId}`)}
                 >
                   View Profile

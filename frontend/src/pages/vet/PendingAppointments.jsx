@@ -1,4 +1,3 @@
-// src/pages/vet/PendingAppointments.jsx
 import { useEffect, useState } from "react";
 import {
   Box,
@@ -19,6 +18,7 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/Sidebar";
+import bgImage from "../../assets/background.png";
 
 const PendingAppointments = () => {
   const navigate = useNavigate();
@@ -29,7 +29,7 @@ const PendingAppointments = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
-  // Fetch pending appointments
+  // Fetch pending (approved) appointments
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
@@ -49,41 +49,43 @@ const PendingAppointments = () => {
     fetchAppointments();
   }, [toast]);
 
-  // OPEN MODAL
+  // Open modal to add notes
   const openNotesModal = (appt) => {
     setSelectedAppt(appt);
     setNotes(appt.notes || "");
     onOpen();
   };
 
-  // SAVE NOTES + MARK DONE
+  // Save notes and mark appointment as done
   const saveNotesAndComplete = async () => {
     if (!notes.trim()) {
       toast({
         title: "Notes cannot be empty",
         status: "error",
         duration: 3000,
+        isClosable: true,
       });
       return;
     }
 
     try {
-      // 1. SAVE NOTES
+      // 1. Save notes
       await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes }),
       });
 
-      // 2. MARK AS DONE
+      // 2. Mark as done
       await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/done`, {
-        method: "PUT",
+        method: "PATCH",
       });
 
       toast({
         title: "Appointment marked as done",
         status: "success",
         duration: 3000,
+        isClosable: true,
       });
 
       // Remove from pending list
@@ -92,24 +94,21 @@ const PendingAppointments = () => {
       );
 
       onClose();
-
-      // Move to past appointments page
       navigate("/appointments/past");
-
     } catch (err) {
       console.error(err);
       toast({
         title: "Error completing appointment",
         status: "error",
         duration: 3000,
+        isClosable: true,
       });
     }
   };
 
   return (
-    <Box bg="url('/background.png')" bgSize="cover" minH="100vh">
+    <Box bgImage={`url(${bgImage})`} bgSize="cover" minH="100vh">
       <Sidebar />
-
       <Box ml="230px" p={6} maxH="100vh" overflowY="auto">
         <Heading mb={6} color="#3a2f2f">
           Pending / Upcoming Appointments
@@ -130,10 +129,8 @@ const PendingAppointments = () => {
                 <Heading fontSize="lg" mb={2} color="#3a2f2f">
                   {appt.petName}
                 </Heading>
-
                 <Text color="#555">Breed: {appt.breed}</Text>
                 <Text color="#555">Age: {appt.age}</Text>
-
                 <Text mt={2} color="#555">
                   Date: {appt.date} | Time: {appt.time}
                 </Text>
@@ -145,7 +142,7 @@ const PendingAppointments = () => {
                   mr={2}
                   bg="#c09a7f"
                   color="white"
-                  _hover={{ bg: "#a57e63" }}
+                  _hover={{ bg: "#977053ff" }}
                   onClick={() => openNotesModal(appt)}
                 >
                   Add Notes
@@ -177,7 +174,7 @@ const PendingAppointments = () => {
               bg="#c09a7f"
               color="white"
               mr={3}
-              _hover={{ bg: "#a57e63" }}
+              _hover={{ bg: "#977053ff" }}
               onClick={saveNotesAndComplete}
             >
               Save + Mark Done
@@ -188,62 +185,8 @@ const PendingAppointments = () => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-
     </Box>
   );
 };
-
-
-// SAVE NOTES + MARK DONE
-const saveNotesAndComplete = async () => {
-  if (!notes.trim()) {
-    toast({
-      title: "Notes cannot be empty",
-      status: "error",
-      duration: 3000,
-    });
-    return;
-  }
-
-  try {
-    // 1. SAVE NOTES AND LOG NOTIFICATION
-    const notesRes = await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/notes`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ notes }),
-    });
-    const notesData = await notesRes.json();
-
-    // 2. MARK AS DONE AND LOG NOTIFICATION
-    const doneRes = await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/done`, {
-      method: "PATCH", // backend uses PATCH for marking done
-    });
-    const doneData = await doneRes.json();
-
-    // Show toast messages from backend
-    toast({
-      title: doneData.message || "Appointment marked as done",
-      status: "success",
-      duration: 3000,
-    });
-
-    // Remove from pending list in UI
-    setAppointments((prev) => prev.filter((a) => a._id !== selectedAppt._id));
-
-    onClose();
-
-    // Navigate to past appointments
-    navigate("/appointments/past");
-
-  } catch (err) {
-    console.error(err);
-    toast({
-      title: "Error completing appointment",
-      status: "error",
-      duration: 3000,
-    });
-  }
-};
-
 
 export default PendingAppointments;

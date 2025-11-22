@@ -41,9 +41,9 @@ app.use(express.json()); // Parse JSON request bodies
 app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
 app.use("/api/appointments", appointmentRoutes);
+app.use("/api/vets", vetRoutes);
 app.use(express.json());
 
-app.use("/api/vets", vetRoutes);
 
 // Production: Serve React frontend
 if (process.env.NODE_ENV === "production") {
