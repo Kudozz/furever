@@ -23,7 +23,7 @@ const ModifyAppointments = () => {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`${import.meta.env.VITE_API_URL}/api/appointments/${userId}`);
+      const res = await axios.post("/api/appointments");
       setAppointments(res.data);
     } catch (error) {
       console.error("API ERROR:", error.response?.data || error.message);

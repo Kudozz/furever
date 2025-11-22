@@ -10,9 +10,8 @@ const UpcomingAppointments = () => {
 
   const fetchAppointments = async () => {
     try {
-      const res = await axios.get(
-        `${import.meta.env.VITE_API_URL}/api/appointments/${userId}`
-      );
+      const res = await axios.get(`/api/appointments/${userId}`);
+
       setAppointments(res.data);
     } catch (error) {
       console.error("API ERROR:", error.response?.data || error.message);

@@ -13,6 +13,7 @@ const vetSchema = new mongoose.Schema({
     bio: { type: String },
     profilePicture: { type: String },
     phoneNumber: { type: String },
+    status: { type: Boolean, default: true },
 }, {
     timestamps: true,
 });

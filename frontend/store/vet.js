@@ -44,18 +44,15 @@ export const useVetInventory = create((set) => ({
     },
 
     // DELETE VET
-    deleteVet: async (vid) => {
-        const res = await fetch(`/api/vets/${vid}`, {
-            method: "DELETE",
-        });
-
+    deactivateVet: async (vetId) => {
+        const res = await fetch(`/api/vets/deactivate/${vetId}`, { method: "PUT" });
         const data = await res.json();
-        if (!data.success)
-            return { success: false, message: data.message };
 
-        // Update UI instantly
-        set((state) => ({
-            vets: state.vets.filter((v) => v._id !== vid),
+        if (!data.success) return { success: false, message: data.message };
+
+        // Update local state to reflect deactivation
+        set(state => ({
+            vets: state.vets.map(vet => vet._id === vetId ? { ...vet, status: false } : vet)
         }));
 
         return { success: true, message: data.message };

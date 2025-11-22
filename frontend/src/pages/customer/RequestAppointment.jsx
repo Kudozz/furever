@@ -52,7 +52,7 @@ const RequestAppointment = () => {
    
 
       // RequestAppointment.jsx
-      await axios.post(`${import.meta.env.VITE_API_URL}/api/appointments`, data, {
+      await axios.post("/api/appointments", data, {
         headers: { "Content-Type": "multipart/form-data" },
       });
       
