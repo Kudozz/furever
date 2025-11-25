@@ -3,14 +3,16 @@ import Appointment from "../models/appointmentModel.js";
 // CREATE APPOINTMENT
 export const createAppointment = async (req, res) => {
   try {
-    const { user, petName, date, time, reason } = req.body;
+    const { user, vet, petId, petName, timeslot, reason, medicalHistory } = req.body;
 
     const appointment = await Appointment.create({
       user,
+      vet,
+      petId,
       petName,
-      date,
-      time,
+      timeslot,
       reason,
+      medicalHistory,
     });
 
     res.status(201).json(appointment);
@@ -40,7 +42,7 @@ export const cancelAppointment = async (req, res) => {
     const appt = await Appointment.findById(id);
     if (!appt) return res.status(404).json({ message: "Not found" });
 
-    appt.status = "canceled";
+    appt.status = "Canceled";
     await appt.save();
 
     res.json({ message: "Appointment canceled" });

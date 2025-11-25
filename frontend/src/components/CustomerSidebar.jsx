@@ -1,6 +1,6 @@
 import { VStack, Box, Text, Link as ChakraLink, HStack, Image, Icon } from "@chakra-ui/react";
 import { Link, useLocation } from "react-router-dom";
-import { FaHome, FaPaw, FaCalendarAlt, FaUser } from "react-icons/fa";
+import { FaHome, FaPaw, FaCalendarAlt, FaUser, FaHeart } from "react-icons/fa";
 
 const Sidebar = () => {
   const location = useLocation();
@@ -8,6 +8,7 @@ const Sidebar = () => {
   const links = [
     { label: "Dashboard", to: "/", icon: FaHome },
     { label: "Adopt", to: "/adopt", icon: FaPaw },
+    { label: "My Adopted Pets", to: "/adopted-pets", icon: FaHeart },
     { label: "Rehome", to: "/rehome", icon: FaPaw },
     { label: "Book Appointment", to: "/book-appt", icon: FaCalendarAlt },
     { label: "Profile", to: "/profile", icon: FaUser },

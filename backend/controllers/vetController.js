@@ -69,7 +69,7 @@ export const deactivateVet = async (req, res) => {
         if (!vet) return res.status(404).json({ success: false, message: "Vet not found" });
 
         // Check for pending appointments
-        const pending = await Appointment.find({ vet: vet._id, status: "pending" });
+        const pending = await Appointment.find({ vet: vet._id, status: "Pending" });
         if (pending.length > 0) {
             return res.status(400).json({ success: false, message: "Vet has pending appointments, cannot deactivate." });
         }

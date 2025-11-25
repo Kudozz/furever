@@ -66,4 +66,30 @@ export const usePetInventory = create((set) =>({
 
         return { success: true, message: data.message };
     },
+
+    adoptPet: async (pid, adoptionData) => {
+        const res = await fetch(`/api/pets/${pid}/adopt`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(adoptionData),
+        });
+        const data = await res.json();
+        if (!data.success) return { success: false, message: data.message };
+
+        // update the ui immediately, without needing a refresh
+        set((state) => ({
+            pets: state.pets.map((pet) => (pet._id === pid ? data.data : pet)),
+        }));
+
+        return { success: true, message: data.message };
+    },
+
+    fetchAdoptedPets: async (userId) => {
+        const res = await fetch(`/api/pets/adopted/${userId}`);
+        const data = await res.json();
+        if (!data.success) return { success: false, message: data.message };
+        return { success: true, data: data.data };
+    },
 }));

@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { deletePet, updatePet, addPet, getPets } from '../controllers/pet.controller.js';
+import { deletePet, updatePet, addPet, getPets, adoptPet, getAdoptedPets } from '../controllers/pet.controller.js';
 
 //get is to see products (view)
 router.get("/", getPets);
@@ -14,6 +14,12 @@ router.put("/:id", updatePet);
 
 //deletion
 router.delete("/:id", deletePet);
+
+//adoption
+router.post("/:id/adopt", adoptPet);
+
+//get adopted pets for a user
+router.get("/adopted/:userId", getAdoptedPets);
 
 
 export default router;

@@ -4,6 +4,7 @@ import { Routes, Route, Navigate } from "react-router-dom";
 // Customer Panel Components
 import AdoptPage from "./pages/AdoptPage";
 import RehomePage from "./pages/RehomePage";
+import ViewAdoptedPets from "./pages/ViewAdoptedPets";
 import Sidebar from "./components/CustomerSidebar";
 import CustomerDash from "./pages/CustomerDash";
 
@@ -86,6 +87,7 @@ function App() {
       {/* Customer Routes (with sidebar) */}
       <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
       <Route path="/adopt" element={<CustomerLayout><AdoptPage /></CustomerLayout>} />
+      <Route path="/adopted-pets" element={<CustomerLayout><ViewAdoptedPets /></CustomerLayout>} />
       <Route path="/rehome" element={<CustomerLayout><RehomePage /></CustomerLayout>} />
       <Route path="/book-appt" element={<CustomerLayout><RequestAppointment /></CustomerLayout>} />
         <Route path="/cancel-appt" element={<CustomerLayout><CancelAppointment /> </CustomerLayout>} />

@@ -19,6 +19,8 @@ import {
 	useDisclosure,
 	useToast,
 	VStack,
+	FormControl,
+	FormLabel,
 } from "@chakra-ui/react";
 import { usePetInventory } from "../../store/pet";
 import { useState } from "react";
@@ -26,13 +28,18 @@ import Theme from "./Theme";
 
 const PetCard = ({ pet }) => {
 	const [updatedPet, setUpdatedPet] = useState(pet);
+	const [adoptionForm, setAdoptionForm] = useState({
+		phone: "",
+		address: "",
+	});
 
 	const textColor = useColorModeValue("gray.600", "gray.200");
 	const bg = useColorModeValue("white", "gray.800");
 
-	const { deletePet, updatePet } = usePetInventory();
+	const { deletePet, updatePet, adoptPet } = usePetInventory();
 	const toast = useToast();
 	const { isOpen, onOpen, onClose } = useDisclosure();
+	const { isOpen: isAdoptOpen, onOpen: onAdoptOpen, onClose: onAdoptClose } = useDisclosure();
 
 	// const handleDeletePet = async (pid) => {
 	// 	const { success, message } = await deletePet(pid);
@@ -77,6 +84,58 @@ const PetCard = ({ pet }) => {
 	// 	}
 	// };
 
+	const handleAdoptPet = async () => {
+		const user = JSON.parse(localStorage.getItem("user"));
+
+		if (!user || !user._id) {
+			toast({
+				title: "Error",
+				description: "Please log in to adopt a pet",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		if (!adoptionForm.phone || !adoptionForm.address) {
+			toast({
+				title: "Error",
+				description: "Please fill in all fields",
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+			return;
+		}
+
+		const { success, message } = await adoptPet(pet._id, {
+			userId: user._id,
+			phone: adoptionForm.phone,
+			address: adoptionForm.address,
+		});
+
+		if (!success) {
+			toast({
+				title: "Error",
+				description: message,
+				status: "error",
+				duration: 3000,
+				isClosable: true,
+			});
+		} else {
+			toast({
+				title: "Success",
+				description: message,
+				status: "success",
+				duration: 3000,
+				isClosable: true,
+			});
+			setAdoptionForm({ phone: "", address: "" });
+			onAdoptClose();
+		}
+	};
+
 	return (
 		<Box
 			shadow='lg'
@@ -105,7 +164,16 @@ const PetCard = ({ pet }) => {
 					Status: {pet.status}
 				</Text>
 
-				<Button fontSize='xl' bg="#b89f7e" _hover={{ bg: "#d8cfc3ff" }}  my={4}>Adopt</Button>
+				<Button
+					fontSize='xl'
+					bg="#b89f7e"
+					_hover={{ bg: "#d8cfc3ff" }}
+					my={4}
+					onClick={onAdoptOpen}
+					isDisabled={pet.status.toLowerCase() !== "available"}
+				>
+					{pet.status.toLowerCase() === "available" ? "Adopt" : "Not Available"}
+				</Button>
 
 				{/* <HStack spacing={2}>
 					<IconButton icon={<EditIcon />} onClick={onOpen} colorScheme='blue' />
@@ -161,6 +229,48 @@ const PetCard = ({ pet }) => {
 					</ModalFooter>
 				</ModalContent>
 			</Modal> */}
+
+			{/* Adoption Modal */}
+			<Modal isOpen={isAdoptOpen} onClose={onAdoptClose}>
+				<ModalOverlay />
+				<ModalContent>
+					<ModalHeader>Adopt {pet.name}</ModalHeader>
+					<ModalCloseButton />
+					<ModalBody>
+						<VStack spacing={4}>
+							<FormControl isRequired>
+								<FormLabel>Phone Number</FormLabel>
+								<Input
+									placeholder='Enter your phone number'
+									value={adoptionForm.phone}
+									onChange={(e) => setAdoptionForm({ ...adoptionForm, phone: e.target.value })}
+								/>
+							</FormControl>
+							<FormControl isRequired>
+								<FormLabel>Address</FormLabel>
+								<Input
+									placeholder='Enter your address'
+									value={adoptionForm.address}
+									onChange={(e) => setAdoptionForm({ ...adoptionForm, address: e.target.value })}
+								/>
+							</FormControl>
+						</VStack>
+					</ModalBody>
+					<ModalFooter>
+						<Button
+							bg="#b89f7e"
+							_hover={{ bg: "#d8cfc3ff" }}
+							mr={3}
+							onClick={handleAdoptPet}
+						>
+							Confirm Adoption
+						</Button>
+						<Button variant='ghost' onClick={onAdoptClose}>
+							Cancel
+						</Button>
+					</ModalFooter>
+				</ModalContent>
+			</Modal>
 		</Box>
 	);
 };
