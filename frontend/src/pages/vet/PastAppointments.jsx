@@ -4,6 +4,7 @@ import {
   Heading,
   Text,
   SimpleGrid,
+  Button,
   Input,
   Flex,
   useToast,
@@ -11,13 +12,14 @@ import {
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/vet/VetSidebar";
 import background from "../../assets/background.png";
-import { useAuth } from "../../AuthContext";
 
 const PastAppointments = () => {
   const navigate = useNavigate();
   const toast = useToast();
-  const { user } = useAuth();
-  const vetId = user?._id;
+
+  const user = JSON.parse(localStorage.getItem("user"));
+  const vetId = user?.vetId;
+
 
   const [appointments, setAppointments] = useState([]);
   const [filteredAppointments, setFilteredAppointments] = useState([]);
@@ -29,7 +31,7 @@ const PastAppointments = () => {
 
     const fetchPastAppointments = async () => {
       try {
-        const res = await fetch(`http://localhost:3000/api/appointments/past/${vetId}`);
+        const res = await fetch(`http://localhost:5000/api/appointments/past/${vetId}`);
         const data = await res.json();
 
         const formattedData = data

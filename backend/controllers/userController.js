@@ -1,5 +1,6 @@
 import User from "../models/userModel.js";
 import jwt from "jsonwebtoken";
+import Vet from "../models/vetModel.js"; // <-- IMPORTANT
 
 const generateToken = (id, role) => {
     return jwt.sign({ id, role }, process.env.JWT_SECRET, { expiresIn: "30d" });
@@ -48,8 +49,15 @@ export const loginUser = async (req, res) => {
         const user = await User.findOne({ email });
 
         if (user && (await user.matchPassword(password))) {
+
+            let vet = null;
+            if (user.role === "vet") {
+                vet = await Vet.findOne({ user: user._id }).select("_id");
+            }
+
             res.json({
                 _id: user._id,
+                vetId: vet ? vet._id : null,
                 name: user.name,
                 email: user.email,
                 role: user.role,

@@ -33,7 +33,7 @@ const PendingAppointments = () => {
   useEffect(() => {
     const fetchAppointments = async () => {
       try {
-        const res = await fetch("http://localhost:3000/api/appointments/pending");
+        const res = await fetch("http://localhost:5000/api/appointments/pending");
         const data = await res.json();
         setAppointments(data);
       } catch (err) {
@@ -70,14 +70,14 @@ const PendingAppointments = () => {
 
     try {
       // 1. Save notes
-      await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/notes`, {
+      await fetch(`http://localhost:5000/api/appointments/${selectedAppt._id}/notes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes }),
       });
 
       // 2. Mark as done
-      await fetch(`http://localhost:3000/api/appointments/${selectedAppt._id}/done`, {
+      await fetch(`http://localhost:5000/api/appointments/${selectedAppt._id}/done`, {
         method: "PATCH",
       });
 

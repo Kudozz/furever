@@ -26,11 +26,13 @@ import VetDashboard from "./pages/vet/VetDashboard";
 import Appointments from "./pages/vet/Appointments";
 import PendingAppointments from "./pages/vet/PendingAppointments";
 import PastAppointments from "./pages/vet/PastAppointments";
+import WaitingAppointments from "./pages/vet/WaitingAppointments";
 
 import Patients from "./pages/vet/Patients";
 import Prescriptions from "./pages/vet/Prescriptions";
 import Profile from "./pages/vet/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminRemoveVet from "./pages/admin/RemoveVet";
 import AddPet from "./pages/admin/AddPet";
 import AddVet from "./pages/admin/AddVet";
 import ViewVets from "./pages/admin/ViewVets";
@@ -70,13 +72,15 @@ function App() {
       <Route path="/admin/pets/add" element={<AddPet />} />
       <Route path="/admin/vets/add" element={<AddVet />} />
       <Route path = "/admin/vets/view" element={<ViewVets/>}/>
+      <Route path="/admin/vets/remove" element={<AdminRemoveVet/>}/>
 
       {/* Vet Routes (no sidebar for now) */}
       <Route path="/vet-home" element={<VetDashboard />} />
       <Route path="/appointments/view" element={<Appointments />} />
       <Route path="/appointments/pending" element={<PendingAppointments />} />
       <Route path="/appointments/past" element={<PastAppointments />} />
-      {/* <Route path="/appointments/waiting" element={<WaitingAppointments />} /> */}
+      <Route path="/appointments/approve" element={<WaitingAppointments />} />
+      <Route path="/appointments/waiting" element={<WaitingAppointments />} />
 
 
       {/* Customer Routes (with sidebar) */}

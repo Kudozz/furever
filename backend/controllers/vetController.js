@@ -1,7 +1,23 @@
 import Vet from "../models/vetModel.js";
 import User from "../models/userModel.js";
-import Appointment from "../models/vetAppointmentModel.js";
+import Appointment from "../models/appointmentModel.js";
 import bcrypt from "bcryptjs";
+
+export const getVetById = async (req, res) => {
+    try {
+        const { id } = req.params;
+
+        const vet = await Vet.findById(id).populate("user");
+
+        if (!vet) {
+            return res.status(404).json({ message: "Vet not found" });
+        }
+
+        return res.json(vet);
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
+};
 
 export const createVet = async (req, res) => {
     try {

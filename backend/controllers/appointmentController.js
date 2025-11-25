@@ -1,293 +1,125 @@
 import Appointment from "../models/appointmentModel.js";
-import Notification from "../models/notificationModel.js";
-import Vet from "../models/vetModel.js";
-import Pet from "../models/petModel.js";
 
-export const getAvailableVets = async (req, res) => {
-  try {
-    const { timeslot } = req.body;
-
-    const bookedVets = await Appointment.find({ timeslot }).select("vet");
-    const availableVets = await Vet.find({ _id: { $nin: bookedVets.map(b => b.vet) } });
-
-    res.json(availableVets);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching available vets" });
-  }
-};
-
+// CREATE APPOINTMENT
 export const createAppointment = async (req, res) => {
   try {
-    const { user, vet, petId, petName, timeslot, reason, medicalHistory } = req.body;
-
-    const filePath = req.file ? req.file.path : medicalHistory || ""; // use uploaded file if exists
+    const { user, petName, date, time, reason } = req.body;
 
     const appointment = await Appointment.create({
       user,
-      vet,
-      petId,
       petName,
-      timeslot,
+      date,
+      time,
       reason,
-      medicalHistory: filePath,
-      status: "Pending",
-    });
-
-    await Notification.create({
-      receiverId: vet,
-      message: `New appointment request from user ${user} for ${petName}`,
-      type: "appointment",
-      appointmentId: appointment._id,
     });
 
     res.status(201).json(appointment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error creating appointment" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-
-export const getUserAppointments = async (req, res) => {
+// GET APPOINTMENTS FOR USER
+export const getAppointments = async (req, res) => {
   try {
-    const appointments = await Appointment.find({ user: req.params.userId });
+    const { userId } = req.params;
+
+    const appointments = await Appointment.find({ user: userId });
+
     res.json(appointments);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching appointments" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
-export const getVetAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({ vet: req.params.vetId });
-    res.json(appointments);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching appointments" });
-  }
-};
-
-export const getPendingAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({
-      vet: req.params.vetId,
-      status: "Approved",
-    }).lean();
-
-    const appointmentsWithPet = await Promise.all(
-      appointments.map(async (appt) => {
-        const pet = await Pet.findById(appt.petId).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
-      })
-    );
-
-    res.json(appointmentsWithPet);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching pending appointments" });
-  }
-};
-
-export const getWaitingAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({
-      vet: req.params.vetId,
-      status: "Pending",
-    }).lean();
-
-    const appointmentsWithPet = await Promise.all(
-      appointments.map(async (appt) => {
-        const pet = await Pet.findById(appt.petId).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
-      })
-    );
-
-    res.json(appointmentsWithPet);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching waiting appointments" });
-  }
-};
-
-export const getApprovedAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({
-      vet: req.params.vetId,
-      status: "Approved",
-    }).lean();
-
-    const appointmentsWithPet = await Promise.all(
-      appointments.map(async (appt) => {
-        const pet = await Pet.findById(appt.petId).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
-      })
-    );
-
-    res.json(appointmentsWithPet);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching approved appointments" });
-  }
-};
-
-export const getPastAppointments = async (req, res) => {
-  try {
-    const appointments = await Appointment.find({
-      vet: req.params.vetId,
-      status: "Done",
-    }).lean();
-
-    const appointmentsWithPet = await Promise.all(
-      appointments.map(async (appt) => {
-        const pet = await Pet.findById(appt.petId).select("breed age image");
-        return {
-          ...appt,
-          breed: pet?.breed || "",
-          age: pet?.age || "",
-          image: pet?.image || "",
-        };
-      })
-    );
-
-    res.json(appointmentsWithPet);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching past appointments" });
-  }
-};
-
-// 7. Cancel appointment
+// CANCEL APPOINTMENT
 export const cancelAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+    const { id } = req.params;
 
-    appointment.status = "Canceled";
-    await appointment.save();
+    const appt = await Appointment.findById(id);
+    if (!appt) return res.status(404).json({ message: "Not found" });
 
-    // Notify vet
-    await Notification.create({
-      receiverId: appointment.vet,
-      message: `Appointment for ${appointment.petName} has been canceled by user`,
-      type: "appointment",
-      appointmentId: appointment._id,
-    });
+    appt.status = "canceled";
+    await appt.save();
 
-    res.json({ message: "Appointment canceled", appointment });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error canceling appointment" });
-  }
-};
-
-export const vetDecision = async (req, res) => {
-  try {
-    const { status } = req.body;
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
-
-    await Notification.updateMany(
-      { appointmentId: appointment._id, receiverId: appointment.vet },
-      { read: true }
-    );
-
-    
-    if (status === "Rejected") {
-      await Appointment.findByIdAndDelete(req.params.id);
-
-      await Notification.create({
-        receiverId: appointment.user,
-        message: `Your appointment for ${appointment.petName} has been Rejected by the vet`,
-        type: "appointment",
-        appointmentId: appointment._id,
-      });
-
-      return res.json({ message: "Appointment rejected and deleted" });
-    }
-
-    appointment.status = status;
-    await appointment.save();
-
-    await Notification.create({
-      receiverId: appointment.user,
-      message: `Your appointment for ${appointment.petName} has been ${status} by the vet`,
-      type: "appointment",
-      appointmentId: appointment._id,
-    });
-
-    res.json(appointment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error updating appointment status" });
+    res.json({ message: "Appointment canceled" });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
 
 
-// 9. Add notes to appointment
-export const addNotes = async (req, res) => {
-  try {
-    const { notes } = req.body;
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
 
-    appointment.notes = notes;
-    await appointment.save();
+// import Appointment from "../models/appointmentModel.js";
+// import customerLog from "../models/customerLogModel.js";
+// // CREATE APPOINTMENT
+// export const createAppointment = async (req, res) => {
+//   try {
+//     const { user, petName, date, time, reason } = req.body;
 
-    await Notification.create({
-      receiverId: appointment.user,
-      message: `Vet has added notes to your appointment for ${appointment.petName}`,
-      type: "appointment",
-      appointmentId: appointment._id,
-    });
+//     const appointment = await Appointment.create({
+//       user,
+//       petName,
+//       date,
+//       time,
+//       reason,
+//     });
 
-    res.json(appointment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error adding notes" });
-  }
-};
+//     try {
+//       await customerLog.create({
+//         user: req.user.id,
+//         appointment: appointment._id,
+//         action: "created",
+//         details: `Appointment for ${appointment.petName} on ${appointment.date} at ${appointment.time}`
+//       });
 
-// 10. Mark appointment done (requires notes)
-export const markAppointmentDone = async (req, res) => {
-  try {
-    const appointment = await Appointment.findById(req.params.id);
-    if (!appointment) return res.status(404).json({ message: "Appointment not found" });
+//       console.log("logged");
+//     } catch (err) {
+//       console.error("Failed to log customer activity:", err.message);
+//     }
 
-    if (!appointment.notes || appointment.notes.trim() === "") {
-      return res.status(400).json({ message: "Cannot mark done without notes" });
-    }
 
-    appointment.status = "Done";
-    await appointment.save();
+//     res.status(201).json(appointment);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
 
-    // Notify user
-    await Notification.create({
-      receiverId: appointment.user,
-      message: `Your appointment for ${appointment.petName} has been completed`,
-      type: "appointment",
-      appointmentId: appointment._id,
-    });
+// // GET APPOINTMENTS FOR USER
+// export const getAppointments = async (req, res) => {
+//   try {
+//     const { userId } = req.params;
 
-    res.json(appointment);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error marking appointment done" });
-  }
-};
+//     const appointments = await Appointment.find({ user: userId });
+
+//     res.json(appointments);
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };
+
+// // CANCEL APPOINTMENT
+// export const cancelAppointment = async (req, res) => {
+//   try {
+//     const { id } = req.params;
+
+//     const appt = await Appointment.findById(id);
+//     if (!appt) return res.status(404).json({ message: "Not found" });
+
+//     appt.status = "canceled";
+//     await appt.save();
+
+//     await customerLog.create({
+//       user: req.user.id,
+//       appointment: appt._id,
+//       action: "cancelled",                // matches enum
+//       details: `Cancelled by user. Reason: ${req.body.reason || "User cancelled"}`
+//     });
+
+
+//     res.json({ message: "Appointment canceled" });
+//   } catch (error) {
+//     res.status(500).json({ message: error.message });
+//   }
+// };

@@ -10,7 +10,7 @@ import {
   getAvailableVets
 } from "../controllers/vetAppointmentController.js";
 
-import Appointment from "../models/vetAppointmentModel.js";
+import Appointment from "../models/appointmentModel.js";
 import Pet from "../models/pet.model.js";
 
 const router = express.Router();

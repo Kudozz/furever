@@ -6,7 +6,7 @@ const Sidebar = ({ scrollToSection, refs }) => {
     const location = useLocation();
 
     const links = [
-        { label: "Dashboard", to: "/", icon: FaHome, isRoute: true },
+        { label: "Dashboard", to: "/vet-home", icon: FaHome, isRoute: true },
         { label: "Appointments", icon: FaCalendarAlt, ref: refs?.appointmentsRef },
         { label: "Pet Profiles", icon: FaPaw, ref: refs?.petProfilesRef },
         { label: "Vet Profile", icon: FaUser, ref: refs?.vetProfileRef },

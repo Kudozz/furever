@@ -1,4 +1,4 @@
-import Appointment from "../models/vetAppointmentModel.js";
+import Appointment from "../models/appointmentModel.js";
 import Notification from "../models/notificationModel.js";
 import Vet from "../models/vetModel.js";
 import Pet from "../models/pet.model.js";
