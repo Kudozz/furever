@@ -29,25 +29,31 @@ const PendingAppointments = () => {
 
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  // Get vetId from localStorage
+  const user = JSON.parse(localStorage.getItem("user"));
+  const vetId = user?.vetId;
+
   // Fetch pending (approved) appointments
+  const fetchAppointments = async () => {
+    if (!vetId) return;
+    try {
+      const res = await fetch(`http://localhost:5000/api/appointments/pending/${vetId}`);
+      const data = await res.json();
+      setAppointments(data);
+    } catch (err) {
+      console.error(err);
+      toast({
+        title: "Error fetching appointments",
+        status: "error",
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
   useEffect(() => {
-    const fetchAppointments = async () => {
-      try {
-        const res = await fetch("http://localhost:5000/api/appointments/pending");
-        const data = await res.json();
-        setAppointments(data);
-      } catch (err) {
-        console.error(err);
-        toast({
-          title: "Error fetching appointments",
-          status: "error",
-          duration: 4000,
-          isClosable: true,
-        });
-      }
-    };
     fetchAppointments();
-  }, [toast]);
+  }, [vetId]);
 
   // Open modal to add notes
   const openNotesModal = (appt) => {
@@ -88,13 +94,14 @@ const PendingAppointments = () => {
         isClosable: true,
       });
 
-      // Remove from pending list
-      setAppointments((prev) =>
-        prev.filter((a) => a._id !== selectedAppt._id)
-      );
+      // Refresh the list
+      fetchAppointments();
 
       onClose();
-      navigate("/appointments/past");
+      setNotes("");
+
+      // Optional: navigate to past appointments
+      // navigate("/appointments/past");
     } catch (err) {
       console.error(err);
       toast({
@@ -110,45 +117,56 @@ const PendingAppointments = () => {
     <Box bgImage={`url(${bgImage})`} bgSize="cover" minH="100vh">
       <Sidebar />
       <Box ml="230px" p={6} maxH="100vh" overflowY="auto">
-        <Heading mb={6} color="#3a2f2f">
+        <Heading mb={6} color="#e8e8e8ff">
           Pending / Upcoming Appointments
         </Heading>
 
         {appointments.length === 0 ? (
-          <Text color="#555">No pending appointments</Text>
+          <Text color="#dadadaff">No pending appointments</Text>
         ) : (
           <SimpleGrid columns={[1, 2]} spacing={6}>
-            {appointments.map((appt) => (
-              <Box
-                key={appt._id}
-                bg="rgba(255,255,255,0.9)"
-                borderRadius="18px"
-                p={6}
-                boxShadow="lg"
-              >
-                <Heading fontSize="lg" mb={2} color="#3a2f2f">
-                  {appt.petName}
-                </Heading>
-                <Text color="#555">Breed: {appt.breed}</Text>
-                <Text color="#555">Age: {appt.age}</Text>
-                <Text mt={2} color="#555">
-                  Date: {appt.date} | Time: {appt.time}
-                </Text>
-                <Text mt={2} mb={4} color="#555">
-                  Reason: {appt.reason}
-                </Text>
+            {appointments.map((appt) => {
+              const dateObj = new Date(appt.timeslot);
+              const dateStr = dateObj.toISOString().split("T")[0];
+              const timeStr = dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-                <Button
-                  mr={2}
-                  bg="#c09a7f"
-                  color="white"
-                  _hover={{ bg: "#977053ff" }}
-                  onClick={() => openNotesModal(appt)}
+              return (
+                <Box
+                  key={appt._id}
+                  bg="rgba(255,255,255,0.9)"
+                  borderRadius="18px"
+                  p={6}
+                  boxShadow="lg"
                 >
-                  Add Notes
-                </Button>
-              </Box>
-            ))}
+                  <Heading fontSize="lg" mb={2} color="#3a2f2f">
+                    {appt.petName}
+                  </Heading>
+                  <Text color="#555">Breed: {appt.breed || "N/A"}</Text>
+                  <Text color="#555">Age: {appt.age || "N/A"}</Text>
+                  <Text mt={2} color="#555">
+                    Date: {dateStr} | Time: {timeStr}
+                  </Text>
+                  <Text mt={2} color="#555">
+                    Reason: {appt.reason || "N/A"}
+                  </Text>
+                  {appt.medicalHistory && (
+                    <Text mt={2} mb={4} color="#555" fontSize="sm">
+                      Medical History: {appt.medicalHistory}
+                    </Text>
+                  )}
+
+                  <Button
+                    mt={4}
+                    bg="#c09a7f"
+                    color="white"
+                    _hover={{ bg: "#977053ff" }}
+                    onClick={() => openNotesModal(appt)}
+                  >
+                    Add Notes & Mark Done
+                  </Button>
+                </Box>
+              );
+            })}
           </SimpleGrid>
         )}
       </Box>

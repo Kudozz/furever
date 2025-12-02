@@ -9,7 +9,7 @@ import Sidebar from "./components/CustomerSidebar";
 import CustomerDash from "./pages/CustomerDash";
 
 //Appointment pages
-import RequestAppointment from "./pages/customer/RequestAppointment";
+import BookAppointment from "./pages/customer/BookAppointment";
 import CancelAppointment from "./pages/customer/CancelAppointment";
 import UpcomingAppointments from "./pages/customer/UpcomingAppointments";
 import ModifyAppointments from "./pages/customer/ModifyAppointments"
@@ -89,7 +89,7 @@ function App() {
       <Route path="/adopt" element={<CustomerLayout><AdoptPage /></CustomerLayout>} />
       <Route path="/adopted-pets" element={<CustomerLayout><ViewAdoptedPets /></CustomerLayout>} />
       <Route path="/rehome" element={<CustomerLayout><RehomePage /></CustomerLayout>} />
-      <Route path="/book-appt" element={<CustomerLayout><RequestAppointment /></CustomerLayout>} />
+      <Route path="/book-appt" element={<CustomerLayout><BookAppointment /></CustomerLayout>} />
         <Route path="/cancel-appt" element={<CustomerLayout><CancelAppointment /> </CustomerLayout>} />
         <Route path="/upcoming-appt" element={<CustomerLayout><UpcomingAppointments /> </CustomerLayout>} />
         <Route path="/modify-appt" element ={<CustomerLayout> <ModifyAppointments/></CustomerLayout>}></Route>

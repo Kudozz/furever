@@ -103,6 +103,9 @@ const VetCard = ({ vet }) => {
                                 <Badge colorScheme='purple' fontSize='sm'>
                                     Veterinarian
                                 </Badge>
+                                <Badge colorScheme={vet.status ? 'green' : 'red'} fontSize='sm'>
+                                    {vet.status ? 'Active' : 'Inactive'}
+                                </Badge>
                             </HStack>
 
                             <Text fontSize='md' color='gray.500'>

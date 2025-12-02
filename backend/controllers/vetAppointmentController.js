@@ -8,7 +8,10 @@ export const getAvailableVets = async (req, res) => {
         const { timeslot } = req.body;
 
         const bookedVets = await Appointment.find({ timeslot }).select("vet");
-        const availableVets = await Vet.find({ _id: { $nin: bookedVets.map(b => b.vet) } });
+        const availableVets = await Vet.find({
+            _id: { $nin: bookedVets.map(b => b.vet) },
+            status: true  // Only show active vets
+        }).populate("user", "name email");
 
         res.json(availableVets);
     } catch (err) {

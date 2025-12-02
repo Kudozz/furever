@@ -35,12 +35,13 @@ const PastAppointments = () => {
         const data = await res.json();
 
         const formattedData = data
-          .filter((appt) => appt.status === "done") // only done appointments
+          .filter((appt) => appt.status === "Done") // only Done appointments
           .map((appt) => {
             const dateObj = new Date(appt.timeslot);
             return {
               ...appt,
-              date: dateObj.toLocaleDateString(),
+              date: dateObj.toISOString().split("T")[0], // Use ISO format for consistent filtering
+              displayDate: dateObj.toLocaleDateString(),
               time: dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
             };
           });
@@ -136,11 +137,16 @@ const PastAppointments = () => {
                   {appt.petName}
                 </Heading>
 
-                <Text mb={2} color="#555">Breed: {appt.breed}</Text>
-                <Text mb={2} color="#555">Age: {appt.age}</Text>
-                <Text mb={2} color="#555">Date: {appt.date} | Time: {appt.time}</Text>
-                <Text mb={2} color="#555">Reason: {appt.reason}</Text>
-                <Text mb={4} color="#555">
+                <Text mb={2} color="#555">Breed: {appt.breed || "N/A"}</Text>
+                <Text mb={2} color="#555">Age: {appt.age || "N/A"}</Text>
+                <Text mb={2} color="#555">Date: {appt.displayDate} | Time: {appt.time}</Text>
+                <Text mb={2} color="#555">Reason: {appt.reason || "N/A"}</Text>
+                {appt.medicalHistory && (
+                  <Text mb={2} color="#555" fontSize="sm">
+                    Medical History: {appt.medicalHistory}
+                  </Text>
+                )}
+                <Text mb={4} color="#555" fontWeight="bold">
                   Notes: {appt.notes || "No notes added"}
                 </Text>
 
@@ -150,7 +156,7 @@ const PastAppointments = () => {
                   _hover={{ bg: "#3f3320ff" }}
                   onClick={() => navigate(`/pet/${appt.petId}`)}
                 >
-                  View Profile
+                  View Pet Profile
                 </Button>
               </Box>
             ))}

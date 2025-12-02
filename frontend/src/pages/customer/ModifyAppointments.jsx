@@ -13,8 +13,6 @@ const statusColors = {
 
 const ModifyAppointments = () => {
   const [appointments, setAppointments] = useState([]);
-  const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ date: "", time: "", reason: "" });
   const [loading, setLoading] = useState(true);
   const toast = useToast();
 
@@ -24,7 +22,7 @@ const ModifyAppointments = () => {
   const fetchAppointments = async () => {
     try {
       setLoading(true);
-      const res = await axios.get(`/api/appointments/${userId}`);
+      const res = await axios.get(`http://localhost:5000/api/appointments/user/${userId}`);
       setAppointments(res.data);
     } catch (error) {
       console.error(error);
@@ -43,31 +41,9 @@ const ModifyAppointments = () => {
     fetchAppointments();
   }, []);
 
-  const handleEditClick = (appt) => {
-    setEditingId(appt._id);
-    setForm({ date: appt.date, time: appt.time, reason: appt.reason });
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
-  };
-
-  const handleSave = async (id) => {
-    try {
-      await axios.patch(`/api/appointments/${id}`, form);
-      toast({ title: "Updated!", description: "Appointment updated", status: "success", isClosable: true });
-      setEditingId(null);
-      fetchAppointments();
-    } catch (error) {
-      console.error(error);
-      toast({ title: "Error", description: "Failed to update", status: "error", isClosable: true });
-    }
-  };
-
   const handleCancel = async (id) => {
     try {
-      await axios.put(`/api/appointments/cancel/${id}`);
+      await axios.put(`http://localhost:5000/api/appointments/cancel/${id}`);
       toast({ title: "Canceled", description: "Appointment canceled", status: "info", isClosable: true });
       fetchAppointments();
     } catch (error) {
@@ -77,45 +53,61 @@ const ModifyAppointments = () => {
   };
 
   if (loading) return <Center mt={20}><Spinner size="xl" /></Center>;
-  if (appointments.length === 0) return <Center mt={20}><Text>No appointments found 😿</Text></Center>;
+
+  const pendingAppointments = appointments.filter((appt) => appt.status === "Pending");
+
+  if (pendingAppointments.length === 0) {
+    return (
+      <Box p={6} bgImage={`url(${bgImage})`} bgSize="cover" minH="100vh">
+        <Center mt={20}>
+          <Text color="white" fontSize="xl">No pending appointments that can be canceled 😿</Text>
+        </Center>
+      </Box>
+    );
+  }
 
   return (
     <Box p={6} bgImage={`url(${bgImage})`} bgSize="cover" minH="100vh">
       <VStack spacing={6} mt={10} maxW="800px" mx="auto">
-        <Heading size="2xl" textAlign="center" mb={6} color="white">Modify Appointments</Heading>
+        <Heading size="2xl" textAlign="center" mb={6} color="white">Cancel Appointments</Heading>
+        <Text color="white" textAlign="center" mb={4}>
+          You can only cancel appointments that are pending vet approval
+        </Text>
 
-        {appointments.map((appt) => (
-          <Box key={appt._id} w="full" p={5} shadow="md" borderWidth="1px" borderRadius="lg" bg="white">
-            <HStack justifyContent="space-between" mb={3}>
-              <Text fontWeight="bold" fontSize="lg">{appt.petName}</Text>
-              <Badge colorScheme={statusColors[appt.status] || "gray"} fontSize="sm">{appt.status}</Badge>
-            </HStack>
+        {pendingAppointments.map((appt) => {
+          const dateObj = new Date(appt.timeslot);
+          const dateStr = dateObj.toISOString().split("T")[0];
+          const timeStr = dateObj.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 
-            <VStack align="start" spacing={2}>
-              {editingId === appt._id ? (
-                <>
-                  <Input name="date" type="date" value={form.date} onChange={handleChange} />
-                  <Input name="time" type="time" value={form.time} onChange={handleChange} step={600} />
-                  <Textarea name="reason" value={form.reason} onChange={handleChange} placeholder="Reason" />
-                  <HStack spacing={3}>
-                    <Button size="sm" colorScheme="green" onClick={() => handleSave(appt._id)}>Save</Button>
-                    <Button size="sm" colorScheme="gray" onClick={() => setEditingId(null)}>Cancel</Button>
-                  </HStack>
-                </>
-              ) : (
-                <>
-                  <Text><strong>Date:</strong> {appt.date}</Text>
-                  <Text><strong>Time:</strong> {appt.time}</Text>
-                  <Text><strong>Reason:</strong> {appt.reason}</Text>
-                  <HStack spacing={3}>
-                    {appt.status !== "canceled" && <Button size="sm" colorScheme="orange" onClick={() => handleEditClick(appt)}>Edit</Button>}
-                    {appt.status !== "canceled" && <Button size="sm" colorScheme="red" onClick={() => handleCancel(appt._id)}>Cancel</Button>}
-                  </HStack>
-                </>
-              )}
-            </VStack>
-          </Box>
-        ))}
+          return (
+            <Box key={appt._id} w="full" p={5} shadow="md" borderWidth="1px" borderRadius="lg" bg="white">
+              <HStack justifyContent="space-between" mb={3}>
+                <Text fontWeight="bold" fontSize="lg" color="#3a2f2f">{appt.petName}</Text>
+                <Badge colorScheme="orange" fontSize="sm">Pending</Badge>
+              </HStack>
+
+              <VStack align="start" spacing={2}>
+                <Text color="#555"><strong>Date:</strong> {dateStr}</Text>
+                <Text color="#555"><strong>Time:</strong> {timeStr}</Text>
+                <Text color="#555"><strong>Reason:</strong> {appt.reason || "N/A"}</Text>
+                {appt.medicalHistory && (
+                  <Text color="#555" fontSize="sm"><strong>Medical History:</strong> {appt.medicalHistory}</Text>
+                )}
+                <HStack spacing={3} mt={2}>
+                  <Button
+                    size="sm"
+                    bg="#b89f7e"
+                    color="white"
+                    _hover={{ bg: "#977053ff" }}
+                    onClick={() => handleCancel(appt._id)}
+                  >
+                    Cancel Appointment
+                  </Button>
+                </HStack>
+              </VStack>
+            </Box>
+          );
+        })}
       </VStack>
     </Box>
   );

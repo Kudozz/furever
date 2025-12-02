@@ -22,7 +22,7 @@ const customerLogSchema = new mongoose.Schema({
     },
     details: {
         type: String,
-    },  
+    },
 });
 
 const customerLog = mongoose.model('customerLog', customerLogSchema);

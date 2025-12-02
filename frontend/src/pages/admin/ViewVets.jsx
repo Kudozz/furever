@@ -65,96 +65,96 @@ const VetsPage = () => {
     }, [vets, searchQuery, sortBy]);
 
     return (
-           <Box
-                    bgImage={`url(${bgImage})`}
-                    bgSize="cover"
-                    bgPosition="center"
-                    minH="100vh"
-                    color="#3a2f2f"
-                >
-        
-        <Container maxW='container.xl' py={3}>
-            <Text
-                fontSize={"60"}
-                fontWeight={"bold"}
-                bgGradient={"linear(to-r, #b89f7e, #a57d49ff)"}
-                bgClip={"text"}
-                textAlign={"center"}
-                mb={10}
-            >
-                Veterinarians
-            </Text>
+        <Box
+            bgImage={`url(${bgImage})`}
+            bgSize="cover"
+            bgPosition="center"
+            minH="100vh"
+            color="#3a2f2f"
+        >
 
-            <VStack spacing={10}>
-                {/* Collapsible Filter Section */}
-                <Box w="full" mb={5}>
-                    <Button
-                        color="rgba(255,255,255,0.9)"
-                        onClick={() => setIsFilterOpen(!isFilterOpen)}
-                        rightIcon={isFilterOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
-                        mb={6}
-                        w="full"
+            <Container maxW='container.xl' py={3}>
+                <Text
+                    fontSize={"60"}
+                    fontWeight={"bold"}
+                    bgGradient={"linear(to-r, #b89f7e, #a57d49ff)"}
+                    bgClip={"text"}
+                    textAlign={"center"}
+                    mb={10}
+                >
+                    Veterinarians
+                </Text>
+
+                <VStack spacing={10}>
+                    {/* Collapsible Filter Section */}
+                    <Box w="full" mb={5}>
+                        <Button
+                            color="rgba(255,255,255,0.9)"
+                            onClick={() => setIsFilterOpen(!isFilterOpen)}
+                            rightIcon={isFilterOpen ? <ChevronUpIcon /> : <ChevronDownIcon />}
+                            mb={6}
+                            w="full"
+                        >
+                            {isFilterOpen ? "Hide" : "Show"} Search & Sort
+                        </Button>
+
+                        <Collapse in={isFilterOpen} animateOpacity>
+                            <VStack spacing={4} p={4} bg="gray.50" borderRadius="md" my={4}>
+                                <HStack w="full" spacing={4}>
+                                    <Input
+                                        placeholder="Search by name, email, speciality, or bio..."
+                                        value={searchQuery}
+                                        onChange={(e) => setSearchQuery(e.target.value)}
+                                        bg="white"
+                                    />
+                                    <Select
+                                        value={sortBy}
+                                        onChange={(e) => setSortBy(e.target.value)}
+                                        bg="white"
+                                        minW="250px"
+                                    >
+                                        <option value="none">No sorting</option>
+                                        <option value="name-asc">Name (A-Z)</option>
+                                        <option value="name-desc">Name (Z-A)</option>
+                                        <option value="speciality-asc">Speciality (A-Z)</option>
+                                        <option value="speciality-desc">Speciality (Z-A)</option>
+                                        <option value="experience-asc">Experience (Least)</option>
+                                        <option value="experience-desc">Experience (Most)</option>
+                                    </Select>
+                                </HStack>
+                            </VStack>
+                        </Collapse>
+                    </Box>
+
+                    {/* Single column grid for wide cards */}
+                    <SimpleGrid
+                        columns={1}
+                        spacing={6}
+                        w={"full"}
                     >
-                        {isFilterOpen ? "Hide" : "Show"} Search & Sort
-                    </Button>
+                        {filteredAndSortedVets.map((vet) => (
+                            <VetCard key={vet._id} vet={vet} />
+                        ))}
+                    </SimpleGrid>
 
-                    <Collapse in={isFilterOpen} animateOpacity>
-                        <VStack spacing={4} p={4} bg="gray.50" borderRadius="md" my={4}>
-                            <HStack w="full" spacing={4}>
-                                <Input
-                                    placeholder="Search by name, email, speciality, or bio..."
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                    bg="white"
-                                />
-                                <Select
-                                    value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    bg="white"
-                                    minW="250px"
-                                >
-                                    <option value="none">No sorting</option>
-                                    <option value="name-asc">Name (A-Z)</option>
-                                    <option value="name-desc">Name (Z-A)</option>
-                                    <option value="speciality-asc">Speciality (A-Z)</option>
-                                    <option value="speciality-desc">Speciality (Z-A)</option>
-                                    <option value="experience-asc">Experience (Least)</option>
-                                    <option value="experience-desc">Experience (Most)</option>
-                                </Select>
-                            </HStack>
-                        </VStack>
-                    </Collapse>
-                </Box>
+                    {filteredAndSortedVets.length === 0 && vets.length > 0 && (
+                        <Text fontSize='xl' textAlign={"center"} fontWeight='bold' color='gray.500'>
+                            No veterinarians match your search criteria.
+                        </Text>
+                    )}
 
-                {/* Single column grid for wide cards */}
-                <SimpleGrid
-                    columns={1}
-                    spacing={6}
-                    w={"full"}
-                >
-                    {filteredAndSortedVets.map((vet) => (
-                        <VetCard key={vet._id} vet={vet} />
-                    ))}
-                </SimpleGrid>
-
-                {filteredAndSortedVets.length === 0 && vets.length > 0 && (
-                    <Text fontSize='xl' textAlign={"center"} fontWeight='bold' color='gray.500'>
-                        No veterinarians match your search criteria.
-                    </Text>
-                )}
-
-                {vets.length === 0 && (
-                    <Text fontSize='xl' textAlign={"center"} fontWeight='bold' color='gray.500'>
-                        No veterinarians found!{" "}
-                        <Link to={"/create-vet"}>
-                            <Text as='span' color='blue.500' _hover={{ textDecoration: "underline" }}>
-                                Add a veterinarian
-                            </Text>
-                        </Link>
-                    </Text>
-                )}
-            </VStack>
-        </Container>
+                    {vets.length === 0 && (
+                        <Text fontSize='xl' textAlign={"center"} fontWeight='bold' color='gray.500'>
+                            No veterinarians found!{" "}
+                            <Link to={"/create-vet"}>
+                                <Text as='span' color='blue.500' _hover={{ textDecoration: "underline" }}>
+                                    Add a veterinarian
+                                </Text>
+                            </Link>
+                        </Text>
+                    )}
+                </VStack>
+            </Container>
         </Box>
     );
 };

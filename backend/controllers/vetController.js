@@ -61,6 +61,35 @@ export const getVets = async (req, res) => {
     }
 };
 
+export const searchVetsByName = async (req, res) => {
+    try {
+        const { name } = req.query;
+
+        if (!name || !name.trim()) {
+            return res.status(400).json({ success: false, message: "Name parameter is required" });
+        }
+
+        // Search for users with matching names (case-insensitive) who are vets
+        const users = await User.find({
+            name: { $regex: name, $options: 'i' },
+            role: 'vet'
+        });
+
+        if (users.length === 0) {
+            return res.status(404).json({ success: false, message: "No vets found with that name" });
+        }
+
+        // Get vet profiles for these users
+        const userIds = users.map(u => u._id);
+        const vets = await Vet.find({ user: { $in: userIds } }).populate("user", "name email");
+
+        res.status(200).json({ success: true, data: vets });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
 export const deactivateVet = async (req, res) => {
     try {
         const { vetId } = req.params;

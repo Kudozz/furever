@@ -43,7 +43,23 @@ export const useVetInventory = create((set) => ({
         set({ vets: data.data });
     },
 
-    // DELETE VET
+    // SEARCH VETS BY NAME
+    searchVetsByName: async (name) => {
+        if (!name || !name.trim()) {
+            return { success: false, message: "Please enter a name to search" };
+        }
+
+        const res = await fetch(`/api/vets/search/by-name?name=${encodeURIComponent(name)}`);
+        const data = await res.json();
+
+        if (!data.success) {
+            return { success: false, message: data.message };
+        }
+
+        return { success: true, data: data.data };
+    },
+
+    // DEACTIVATE VET
     deactivateVet: async (vetId) => {
         const res = await fetch(`/api/vets/deactivate/${vetId}`, { method: "PUT" });
         const data = await res.json();
