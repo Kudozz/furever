@@ -52,13 +52,13 @@ const VetDashboard = () => {
       title: "View Pet",
       description: "Check pet history, owner details, and medical info.",
       buttonText: "View",
-      path: "/pets/view",
+      path: "vet/pets/view",
     },
     {
       title: "Modify Pet",
       description: "Update vaccination, treatment, or owner details.",
       buttonText: "Update",
-      path: "/pets/modify",
+      path: "vet/pets/view",
     },
   ];
 

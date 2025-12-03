@@ -69,9 +69,9 @@ const AdminDashboard = () => {
     },
     {
       title: "Remove Pet",
-      description: "Remove a pet that has been adopted or is deceased.",
+      description: "Remove a pet from inventory.",
       buttonText: "Remove Pet",
-      path: "/admin/pets/remove",
+      path: "/admin/pets/view",
     },
     {
       title: "View Pets",
@@ -81,9 +81,9 @@ const AdminDashboard = () => {
     },
     {
       title: "Modify Pet",
-      description: "Update pet history and medical information.",
+      description: "Update pet information.",
       buttonText: "Modify Pet",
-      path: "/admin/pets/modify",
+      path: "/admin/pets/view",
     },
   ];
 

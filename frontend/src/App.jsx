@@ -18,6 +18,7 @@ import ModifyAppointments from "./pages/customer/ModifyAppointments"
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import Welcome from "./components/welcome";
+import AdminViewPets from "./pages/admin/ViewPets";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import Appointment from "./components/Appointments";
@@ -37,7 +38,7 @@ import AdminRemoveVet from "./pages/admin/RemoveVet";
 import AddPet from "./pages/admin/AddPet";
 import AddVet from "./pages/admin/AddVet";
 import ViewVets from "./pages/admin/ViewVets";
-
+import VetViewPets from "./pages/vet/ViewPets";
 // Customer Layout Wrapper
 function CustomerLayout({ children }) {
   return (
@@ -71,6 +72,7 @@ function App() {
       {/* Admin Routes (no sidebar) */}
       <Route path="/admin" element={<AdminDashboard />} />
       <Route path="/admin/pets/add" element={<AddPet />} />
+      <Route path="/admin/pets/view" element={<AdminViewPets />} />
       <Route path="/admin/vets/add" element={<AddVet />} />
       <Route path = "/admin/vets/view" element={<ViewVets/>}/>
       <Route path="/admin/vets/remove" element={<AdminRemoveVet/>}/>
@@ -82,7 +84,7 @@ function App() {
       <Route path="/appointments/past" element={<PastAppointments />} />
       <Route path="/appointments/approve" element={<WaitingAppointments />} />
       <Route path="/appointments/waiting" element={<WaitingAppointments />} />
-
+      <Route path="/vet/pets/view" element={<VetViewPets/>}/>
 
       {/* Customer Routes (with sidebar) */}
       <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
