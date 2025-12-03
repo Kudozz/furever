@@ -22,6 +22,11 @@ import AdminViewPets from "./pages/admin/ViewPets";
 import Home from "./components/Home";
 import Dashboard from "./components/Dashboard";
 import Appointment from "./components/Appointments";
+import ViewCustomers from "./pages/admin/ViewCustomers";
+import BanCustomersPage from "./pages/admin/BanCustomers";
+
+
+
 
 // Vet Panel Components
 import VetDashboard from "./pages/vet/VetDashboard";
@@ -76,6 +81,10 @@ function App() {
       <Route path="/admin/vets/add" element={<AddVet />} />
       <Route path = "/admin/vets/view" element={<ViewVets/>}/>
       <Route path="/admin/vets/remove" element={<AdminRemoveVet/>}/>
+      <Route path="/admin/customers/view" element={<ViewCustomers />} />
+      <Route path="/admin/customers/ban" element={<BanCustomersPage />} />
+
+
 
       {/* Vet Routes (no sidebar for now) */}
       <Route path="/vet-home" element={<VetDashboard />} />

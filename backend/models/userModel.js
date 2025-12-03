@@ -20,6 +20,11 @@ const userSchema = new mongoose.Schema(
             enum: ["user", "admin", "vet"], 
             default: "user",
         },
+        banned: {
+            type: Boolean,
+            default: false,
+        },
+        
     },
     { timestamps: true }
 );

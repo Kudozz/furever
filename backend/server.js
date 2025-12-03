@@ -8,6 +8,8 @@ import userRoutes from "./routes/userRoutes.js";
 import productRoutes from "./routes/pet.route.js";
 import vetAppointmentRoutes from "./routes/vetAppointmentRoutes.js";
 import vetRoutes from "./routes/vetRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+
 
 // Load environment variables
 dotenv.config();
@@ -42,6 +44,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/pets", productRoutes);
 app.use("/api/appointments", vetAppointmentRoutes);
 app.use("/api/vets", vetRoutes);
+app.use("/api/admin", adminRoutes);
 app.use(express.json());
 
 
