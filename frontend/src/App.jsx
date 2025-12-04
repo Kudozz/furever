@@ -93,6 +93,8 @@ function App() {
       <Route path="/appointments/past" element={<PastAppointments />} />
       <Route path="/appointments/approve" element={<WaitingAppointments />} />
       <Route path="/appointments/waiting" element={<WaitingAppointments />} />
+        <Route path="/appointments/mark-done" element={<PendingAppointments />} />
+      <Route path="/appointments/add-notes" element={<PendingAppointments />} />
       <Route path="/vet/pets/view" element={<VetViewPets/>}/>
 
       {/* Customer Routes (with sidebar) */}

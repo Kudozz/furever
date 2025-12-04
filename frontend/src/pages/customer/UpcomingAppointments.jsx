@@ -17,6 +17,7 @@ const UpcomingAppointments = () => {
 
   const userData = JSON.parse(localStorage.getItem("user"));
   const userId = userData?._id;
+       const cardBg = useColorModeValue("white", "gray.800");
 
   const fetchAppointments = async () => {
     try {
@@ -57,6 +58,7 @@ const UpcomingAppointments = () => {
       <VStack spacing={6} mt={10} maxW="800px" mx="auto">
         <Heading size="2xl" textAlign="center" mb={6} color="white">My Appointments</Heading>
 
+
         {upcomingAppointments.map((appt) => {
           const dateObj = new Date(appt.timeslot);
           const dateStr = dateObj.toISOString().split("T")[0];
@@ -70,7 +72,7 @@ const UpcomingAppointments = () => {
               shadow="md"
               borderWidth="1px"
               borderRadius="lg"
-              bg={useColorModeValue("white", "gray.800")}
+            bg={cardBg}
             >
               <VStack align="start" spacing={2}>
                 <Text fontWeight="bold" fontSize="lg" color="#3a2f2f">{appt.petName}</Text>
