@@ -7,6 +7,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import bgImage from "../../assets/background.png";
+import NotificationBell from "../../components/VetNotificationBell";
 
 const BookAppointment = () => {
   const navigate = useNavigate();
@@ -165,6 +166,9 @@ const BookAppointment = () => {
   };
 
   return (
+    <>
+    <NotificationBell role="user" />
+    <Box ml="230px" mt="70px" p={8}>{
     <Box
       p={6}
       bgImage={`url(${bgImage})`}
@@ -397,7 +401,9 @@ const BookAppointment = () => {
           )}
         </VStack>
       </Container>
+    </Box>}
     </Box>
+    </>
   );
 };
 

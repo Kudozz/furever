@@ -113,3 +113,44 @@ export const deactivateVet = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+
+// for updating vet
+
+export const updateVet = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { speciality, experienceYears, bio, profilePicture, phoneNumber, qualifications } = req.body;
+    
+    const updatedVet = await Vet.findByIdAndUpdate(
+      id,
+      { 
+        speciality, 
+        experienceYears, 
+        bio, 
+        profilePicture, 
+        phoneNumber, 
+        qualifications 
+      },
+      { new: true, runValidators: true }
+    ).populate('user', 'name email');
+
+    if (!updatedVet) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Vet not found' 
+      });
+    }
+
+    res.status(200).json({ 
+      success: true, 
+      data: updatedVet 
+    });
+  } catch (error) {
+    console.error('Error updating vet:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};

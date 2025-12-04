@@ -1,29 +1,7 @@
-import jwt from "jsonwebtoken";
 import User from "../models/userModel.js";
+import upload from "../middleware/uploadMiddleware.js"; 
 
-export const protect = async (req, res, next) => {
-    let token;
-
-    if (
-        req.headers.authorization &&
-        req.headers.authorization.startsWith("Bearer")
-    ) {
-        try {
-            token = req.headers.authorization.split(" ")[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
-            req.user = await User.findById(decoded.id).select("-password");
-            next();
-        } catch (error) {
-            res.status(401).json({ message: "Not authorized, token failed" });
-        }
-    }
-
-    if (!token) {
-        res.status(401).json({ message: "Not authorized, no token" });
-    }
-};
-
-
+// PUT /api/customers/update-profile/:id
 export const updateCustomerProfile = async (req, res) => {
   try {
     const { name, email, phone, address } = req.body;
@@ -32,11 +10,6 @@ export const updateCustomerProfile = async (req, res) => {
 
     if (!customer) {
       return res.status(404).json({ message: "Customer not found" });
-    }
-
-    //security check: only allow owner to update their profile
-    if (req.user._id.toString() !== customer._id.toString()) {
-      return res.status(403).json({ message: "Not authorized to update this profile" });
     }
 
     // Update fields

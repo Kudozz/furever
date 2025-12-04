@@ -1,15 +1,15 @@
 import mongoose from "mongoose";
 
-const vetNotificationSchema = new mongoose.Schema({
+const customerNotificationSchema = new mongoose.Schema({
   
-  // Vet ID (references Vet/User model)
-  vetId: {
+  // Customer ID (references Customer model)
+  customerId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // or "Vet" depending on your model name
+    ref: "Customer",
     required: true,
   },
 
-  // Related entity ID (appointment, patient, etc.)
+  // Related entity ID (appointment, order, etc.)
   relatedId: {
     type: mongoose.Schema.Types.ObjectId,
     refPath: 'relatedModel',
@@ -19,7 +19,7 @@ const vetNotificationSchema = new mongoose.Schema({
   // Dynamic reference model
   relatedModel: {
     type: String,
-    enum: ["Appointment", "Patient", "Customer", "Pet"],
+    enum: ["Appointment", "Order", "Pet", "Payment"],
     required: false,
   },
 
@@ -34,13 +34,14 @@ const vetNotificationSchema = new mongoose.Schema({
     type: String, 
     default: "general",
     enum: [
-      "appointment_request",
       "appointment_confirmed",
+      "appointment_reminder", 
       "appointment_cancelled",
-      "appointment_reminder",
-      "new_patient",
-      "urgent_case",
-      "reminder",
+      "appointment_rescheduled",
+      "payment_received",
+      "payment_due",
+      "order_status",
+      "promotional",
       "general"
     ]
   },
@@ -54,7 +55,7 @@ const vetNotificationSchema = new mongoose.Schema({
   // Priority level
   priority: {
     type: String,
-    enum: ["low", "medium", "high", "urgent"],
+    enum: ["low", "medium", "high"],
     default: "medium"
   },
 
@@ -71,6 +72,6 @@ const vetNotificationSchema = new mongoose.Schema({
 );
 
 // Index for faster queries
-vetNotificationSchema.index({ vetId: 1, isRead: 1, createdAt: -1 });
+customerNotificationSchema.index({ customerId: 1, isRead: 1, createdAt: -1 });
 
-export default mongoose.model("VetNotification", vetNotificationSchema);
+export default mongoose.model("CustomerNotification", customerNotificationSchema);
