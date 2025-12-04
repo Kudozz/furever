@@ -3,6 +3,8 @@ import { Box, SimpleGrid, Heading, Button, Text } from "@chakra-ui/react";
 import Sidebar from "../components/CustomerSidebar";
 import Header from "../components/Header";
 import CardItem from "../components/CardItem.jsx";
+import CustomerNotificationBell from "./components/CustomerNotificationBell";
+
 import { useNavigate } from "react-router-dom";
 
 const CustomerDash = () => {
@@ -74,6 +76,9 @@ const CustomerDash = () => {
     return (
         <>
             <Sidebar />
+            <CustomerNotificationBell customerId={user?._id} />
+
+            <Box ml ="230px" mt="70px" p={8}>{
         <Box
             bgImage={`url(${bgImage})`}
             bgSize="cover"
@@ -169,7 +174,8 @@ const CustomerDash = () => {
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Box>}
+       </Box> 
         </>
     );
 };

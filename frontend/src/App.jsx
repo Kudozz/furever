@@ -7,6 +7,7 @@ import RehomePage from "./pages/RehomePage";
 import ViewAdoptedPets from "./pages/ViewAdoptedPets";
 import Sidebar from "./components/CustomerSidebar";
 import CustomerDash from "./pages/CustomerDash";
+import Profile from "./pages/vet/Profile";  
 
 //Appointment pages
 import BookAppointment from "./pages/customer/BookAppointment";
@@ -34,9 +35,7 @@ import Appointments from "./pages/vet/Appointments";
 import PendingAppointments from "./pages/vet/PendingAppointments";
 import PastAppointments from "./pages/vet/PastAppointments";
 import WaitingAppointments from "./pages/vet/WaitingAppointments";
-
-import Patients from "./pages/vet/Patients";
-import Prescriptions from "./pages/vet/Prescriptions";
+import Header from "./Header"; 
 import Profile from "./pages/vet/Profile";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminRemoveVet from "./pages/admin/RemoveVet";
@@ -44,8 +43,14 @@ import AddPet from "./pages/admin/AddPet";
 import AddVet from "./pages/admin/AddVet";
 import ViewVets from "./pages/admin/ViewVets";
 import VetViewPets from "./pages/vet/ViewPets";
+
+
+//notifications
+import NotificationBell from "components/CustomerNotificationBell";
+
 // Customer Layout Wrapper
 function CustomerLayout({ children }) {
+  const savedUser = JSON.parse(localStorage.getItem("user"));
   return (
     <Box
       minH="100vh"
@@ -57,11 +62,23 @@ function CustomerLayout({ children }) {
     >
       <Sidebar />
       <Box flex="1" ml="230px" p={6}>
+
+         <Box
+          position="absolute"
+          top="20px"
+          right="20px"
+          zIndex="1000"
+        >
+          <NotificationBell customerId={savedUser?._id} />
+        </Box>
+
         {children}
       </Box>
     </Box>
   );
 }
+
+
 
 function App() {
   return (
@@ -86,16 +103,19 @@ function App() {
 
 
 
-      {/* Vet Routes (no sidebar for now) */}
-      <Route path="/vet-home" element={<VetDashboard />} />
-      <Route path="/appointments/view" element={<Appointments />} />
-      <Route path="/appointments/pending" element={<PendingAppointments />} />
-      <Route path="/appointments/past" element={<PastAppointments />} />
-      <Route path="/appointments/approve" element={<WaitingAppointments />} />
-      <Route path="/appointments/waiting" element={<WaitingAppointments />} />
-        <Route path="/appointments/mark-done" element={<PendingAppointments />} />
+      {/* Vet Routes (wrapped in VetLayout) */}
+      <Route path="/vet" element={<VetLayout title="Vet Panel" />}>
+        <Route path="home" element={<VetDashboard />} />
+        <Route path="appointments/view" element={<Appointments />} />
+        <Route path="appointments/pending" element={<PendingAppointments />} />
+        <Route path="appointments/past" element={<PastAppointments />} />
+        <Route path="appointments/approve" element={<WaitingAppointments />} />
+        <Route path="appointments/waiting" element={<WaitingAppointments />} />
+          <Route path="/appointments/mark-done" element={<PendingAppointments />} />
       <Route path="/appointments/add-notes" element={<PendingAppointments />} />
-      <Route path="/vet/pets/view" element={<VetViewPets/>}/>
+      <Route path="pets/view" element={<VetViewPets />} />
+        <Route path="profile" element={<Profile />} />
+      </Route>
 
       {/* Customer Routes (with sidebar) */}
       <Route path="/customer-home" element={<CustomerLayout><CustomerDash /></CustomerLayout>} />
@@ -106,7 +126,8 @@ function App() {
         <Route path="/cancel-appt" element={<CustomerLayout><CancelAppointment /> </CustomerLayout>} />
         <Route path="/upcoming-appt" element={<CustomerLayout><UpcomingAppointments /> </CustomerLayout>} />
         <Route path="/modify-appt" element ={<CustomerLayout> <ModifyAppointments/></CustomerLayout>}></Route>
-
+      <Route path="/profile" element={<Profile />} />
+      <Route path="/customer-home" element={<CustomerHome />} />
 
 
     {/* unimplemented */}

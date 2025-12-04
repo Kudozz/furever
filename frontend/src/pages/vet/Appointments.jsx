@@ -2,6 +2,8 @@ import { Box, SimpleGrid, Heading, Button, Text } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import Sidebar from "../../components/vet/VetSidebar"; 
 import bgImage from "../../assets/background.png"; 
+import VetNotificationBell from "./components/VetNotificationBell";
+
 
 const Appointments = () => {
   const navigate = useNavigate();

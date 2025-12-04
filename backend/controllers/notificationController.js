@@ -1,67 +1,120 @@
-import Notification from "../models/notificationModel.js";
+import Notification from '../models/Notification.js';
 
-// Get all notifications for a user (or vet)
+// Get notifications for a specific user
 export const getNotifications = async (req, res) => {
   try {
     const { userId } = req.params;
-
-    const notifications = await Notification.find({ receiverId: userId })
-      .sort({ createdAt: -1 }); // latest first
-
-    res.json(notifications);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching notifications" });
+    
+    const notifications = await Notification.find({ userId })
+      .sort({ createdAt: -1 })
+      .limit(50);
+    
+    res.status(200).json({ 
+      success: true, 
+      data: notifications 
+    });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 
-// Get unread notifications count for a user
+// Get unread count
 export const getUnreadCount = async (req, res) => {
   try {
     const { userId } = req.params;
-
-    const count = await Notification.countDocuments({ receiverId: userId, read: false });
-
-    res.json({ unreadCount: count });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error fetching unread notifications count" });
+    
+    const count = await Notification.countDocuments({ 
+      userId, 
+      isRead: false 
+    });
+    
+    res.status(200).json({ 
+      success: true, 
+      count, 
+      unreadCount: count 
+    });
+  } catch (error) {
+    console.error('Error fetching unread count:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 
-// Mark a notification as read
+// Mark notification as read
 export const markAsRead = async (req, res) => {
   try {
-    const { id } = req.params;
-
+    const { id } = req.params; // Note: route uses :id
+    
     const notification = await Notification.findByIdAndUpdate(
       id,
-      { read: true },
+      { isRead: true },
       { new: true }
     );
+    
+    if (!notification) {
+      return res.status(404).json({ 
+        success: false, 
+        message: 'Notification not found' 
+      });
+    }
 
-    if (!notification) return res.status(404).json({ message: "Notification not found" });
-
-    res.json(notification);
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error marking notification as read" });
+    res.status(200).json({ 
+      success: true, 
+      data: notification 
+    });
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };
 
-// Mark all notifications as read for a user and return updated notifications
+// Mark all notifications as read
 export const markAllAsRead = async (req, res) => {
   try {
     const { userId } = req.params;
+    
+    await Notification.updateMany(
+      { userId, isRead: false },
+      { isRead: true }
+    );
+    
+    res.status(200).json({ 
+      success: true, 
+      message: 'All notifications marked as read' 
+    });
+  } catch (error) {
+    console.error('Error marking all as read:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
+  }
+};
 
-    await Notification.updateMany({ receiverId: userId, read: false }, { read: true });
-
-    // Return updated notifications list
-    const notifications = await Notification.find({ receiverId: userId }).sort({ createdAt: -1 });
-
-    res.json({ message: "All notifications marked as read", notifications });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "Error marking all notifications as read" });
+// Create notification (helper for other parts of your app)
+export const createNotification = async (req, res) => {
+  try {
+    const notification = new Notification(req.body);
+    await notification.save();
+    
+    res.status(201).json({ 
+      success: true, 
+      data: notification 
+    });
+  } catch (error) {
+    console.error('Error creating notification:', error);
+    res.status(500).json({ 
+      success: false, 
+      message: error.message 
+    });
   }
 };

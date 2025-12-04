@@ -1,7 +1,7 @@
 import express from "express";
 const router = express.Router();
 
-import { createVet, getVets, getVetById, searchVetsByName, deactivateVet } from '../controllers/vetController.js';
+import { createVet, getVets, getVetById, searchVetsByName, deactivateVet, updateVet  } from '../controllers/vetController.js';
 
 
 //post is to create a new product
@@ -17,7 +17,7 @@ router.get("/:id", getVetById);
 
 // Deactivate a vet
 router.put("/deactivate/:vetId", deactivateVet);
-
+router.put("/:id", updateVet);//for updating vet profile
 export default router;
 
 

@@ -9,7 +9,11 @@ import productRoutes from "./routes/pet.route.js";
 import vetAppointmentRoutes from "./routes/vetAppointmentRoutes.js";
 import vetRoutes from "./routes/vetRoutes.js";
 import adminRoutes from "./routes/adminRoutes.js";
+import Customer from "./models/customerModel.js";
+import vetNotificationRoutes from "./routes/VetNotificationRoutes.js";
 
+
+app.use("/api/vet-notifications", vetNotificationRoutes);
 
 // Load environment variables
 dotenv.config();
